@@ -1,0 +1,6 @@
+﻿services:
+  ripperdocshop:
+    image: ripperdocshop
+    build:
+      context: .
+      dockerfile: RipperdocShop/Dockerfile
