@@ -52,7 +52,7 @@ public class Category
     public void Restore()
     {
         if (DeletedAt == null)
-            throw new InvalidOperationException("It's still alive, y'know. (Category is not deleted)");
+            throw new InvalidOperationException("It's still alive, y'know. (Category is not already deleted)");
         
         DeletedAt = null;
         UpdatedAt = DateTime.UtcNow;
