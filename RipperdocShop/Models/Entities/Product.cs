@@ -26,6 +26,8 @@ public class Product
     [Range(0.0, double.MaxValue)]
     public decimal Price { get; private set; }
     
+    public bool IsFeatured { get; private set; }
+    
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
     public DateTime? DeletedAt { get; private set; }
@@ -78,6 +80,24 @@ public class Product
         Category = category;
         BrandId = brand?.Id;
         Brand = brand;
+        UpdatedAt = DateTime.UtcNow;
+    }
+    
+    public void SetFeatured()
+    {
+        if (IsFeatured)
+            throw new InvalidOperationException("Already on the spotlight. (Product is already featured)");
+        
+        IsFeatured = true;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void RemoveFeatured()
+    {
+        if (!IsFeatured)
+            throw new InvalidOperationException("Can't remove what's not there. (Product is not already featured)");
+        
+        IsFeatured = false;
         UpdatedAt = DateTime.UtcNow;
     }
     

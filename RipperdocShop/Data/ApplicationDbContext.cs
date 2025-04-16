@@ -6,11 +6,9 @@ using RipperdocShop.Models.Identity;
 
 namespace RipperdocShop.Data;
 
-public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>(options)
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options) { }
-
     public DbSet<Category> Categories { get; set; }
     public DbSet<Brand> Brands { get; set; }
     public DbSet<Product> Products { get; set; }
