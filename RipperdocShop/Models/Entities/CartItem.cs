@@ -1,3 +1,5 @@
+// OPTIONAL
+
 using RipperdocShop.Models.Identity;
 
 namespace RipperdocShop.Models.Entities;

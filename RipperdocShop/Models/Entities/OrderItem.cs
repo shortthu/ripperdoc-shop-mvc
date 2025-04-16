@@ -1,3 +1,5 @@
+// OPTIONAL
+
 namespace RipperdocShop.Models.Entities;
 
 public class OrderItem
