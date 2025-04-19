@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using RipperdocShop.Utils;
 
 namespace RipperdocShop.Models.Entities;
@@ -5,8 +6,17 @@ namespace RipperdocShop.Models.Entities;
 public class Category
 {
     public Guid Id { get; private set; }
+    
+    [Required]
+    [StringLength(100)]
     public string Name { get; private set; } = string.Empty;
+    
+    [Required]
+    [StringLength(120)]
     public string Slug { get; private set; } = string.Empty;
+    
+    [Required]
+    [StringLength(500)]
     public string Description { get; private set; } = string.Empty;
     
     public DateTime CreatedAt { get; private set; }
