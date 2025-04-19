@@ -1,11 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace RipperdocShop.Models.ViewModels;
+namespace RipperdocShop.Models.DTOs;
 
-public class CategoryViewModel
+public class CategoryDto
 {
-    public Guid? Id { get; set; }
-    
     [Required]
     [StringLength(100)]
     public string Name { get; set; } = string.Empty;

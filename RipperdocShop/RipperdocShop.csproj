@@ -32,7 +32,14 @@
 
     <ItemGroup>
       <Folder Include="Areas\Identity\Pages\Account\Manage\" />
-      <Folder Include="Controllers\Admin\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Categories\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Categories\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Categories\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Categories\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Categories\Index.cshtml" />
     </ItemGroup>
 
 </Project>
