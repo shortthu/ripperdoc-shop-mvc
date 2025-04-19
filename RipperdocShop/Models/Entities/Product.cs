@@ -39,6 +39,8 @@ public class Product
     public Guid? BrandId { get; private set; }
     public Brand? Brand { get; private set; }
     
+    public List<ProductRating> ProductRatings { get; private set; } = new();
+    
     private Product() { }
 
     public Product(string name, string description, string imageUrl, decimal price, Category category, 

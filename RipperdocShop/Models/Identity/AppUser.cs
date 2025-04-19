@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using RipperdocShop.Models.Entities;
 
 namespace RipperdocShop.Models.Identity;
 
@@ -8,6 +9,7 @@ public class AppUser : IdentityUser<Guid>
     public DateTime UpdatedAt { get; private set; }
     public DateTime? DeletedAt { get; private set; }
     public bool IsDisabled { get; private set; }
+    public List<ProductRating> ProductRatings { get; private set; } = new();
     
     public AppUser() { }
     

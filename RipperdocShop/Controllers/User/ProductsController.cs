@@ -3,24 +3,23 @@ using Microsoft.EntityFrameworkCore;
 using RipperdocShop.Data;
 using RipperdocShop.Models.Entities;
 
-namespace RipperdocShop.Controllers.Products;
+namespace RipperdocShop.Controllers.User;
 
 [ApiController]
 [Route("api/user/products")]
-public class UserProductsController(ApplicationDbContext db) : ControllerBase
+public class ProductsController(ApplicationDbContext db) : Controller
 {
     [HttpGet("{slug}")]
-    // [ProducesResponseType(StatusCodes.Status200OK)]
-    // [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Product>> GetBySlug(string slug)
     {
         var product = await db.Products
             .Include(p => p.Category)
             .Include(p => p.Brand)
+            .Include(p => p.ProductRatings)
             .FirstOrDefaultAsync(p => p.Slug == slug && p.DeletedAt != null);
 
         if (product is null) return NotFound();
         
-        return Ok(product);
+        return View(product);
     }
 }
