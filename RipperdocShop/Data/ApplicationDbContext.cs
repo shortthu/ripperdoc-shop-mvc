@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RipperdocShop.Models.Entities;
-using RipperdocShop.Models.Identity;
+using RipperdocShop.Models.Identities;
 
 namespace RipperdocShop.Data;
 

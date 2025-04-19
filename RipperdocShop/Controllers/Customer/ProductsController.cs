@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RipperdocShop.Data;
 using RipperdocShop.Models.Entities;
 
-namespace RipperdocShop.Controllers.User;
+namespace RipperdocShop.Controllers.Customer;
 
 [ApiController]
 [Route("api/user/products")]

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using RipperdocShop.Models.Entities;
 
-namespace RipperdocShop.Models.Identity;
+namespace RipperdocShop.Models.Identities;
 
 public class AppUser : IdentityUser<Guid>
 {

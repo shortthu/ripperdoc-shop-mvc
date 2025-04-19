@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RipperdocShop.Data;
-using RipperdocShop.Models.Identity;
+using RipperdocShop.Models.Identities;
 
 var builder = WebApplication.CreateBuilder(args);
 

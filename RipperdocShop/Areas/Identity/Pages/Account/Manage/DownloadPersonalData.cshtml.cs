@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using RipperdocShop.Models.Identity;
+using RipperdocShop.Models.Identities;
 
 namespace RipperdocShop.Areas.Identity.Pages.Account.Manage
 {

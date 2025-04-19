@@ -1,6 +1,6 @@
 // OPTIONAL
 
-using RipperdocShop.Models.Identity;
+using RipperdocShop.Models.Identities;
 
 namespace RipperdocShop.Models.Entities;
 
