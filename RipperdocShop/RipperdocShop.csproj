@@ -31,10 +31,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Areas\Identity\Pages\Account\Manage\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <_ContentIncludedByDefault Remove="Views\Categories\Create.cshtml" />
       <_ContentIncludedByDefault Remove="Views\Categories\Delete.cshtml" />
       <_ContentIncludedByDefault Remove="Views\Categories\Details.cshtml" />
