@@ -39,12 +39,13 @@ public class Product
     public Guid? BrandId { get; private set; }
     public Brand? Brand { get; private set; }
     
-    public List<ProductRating> ProductRatings { get; private set; } = new();
+    // TODO: Do something about this
+    public List<ProductRating> ProductRatings { get; private set; } = [];
     
     private Product() { }
 
     public Product(string name, string description, string imageUrl, decimal price, Category category, 
-        Brand? brand = null)
+        bool isFeatured = false, Brand? brand = null)
     {
         if (string.IsNullOrWhiteSpace(name)) 
             throw new ArgumentException("You tryna sell nothing? (Product name is required)");
@@ -56,6 +57,7 @@ public class Product
         Description = description.Trim();
         ImageUrl = imageUrl;
         Price = price;
+        IsFeatured = isFeatured;
         CategoryId = category.Id;
         Category = category;
         BrandId = brand?.Id;
