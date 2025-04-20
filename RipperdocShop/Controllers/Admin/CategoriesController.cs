@@ -7,7 +7,7 @@ using RipperdocShop.Models.DTOs;
 
 namespace RipperdocShop.Controllers.Admin;
 
-[Route("api/admin/[controller]")]
+[Route("api/admin/categories")]
 [ApiController]
 [Authorize(Roles = "Admin")]
 public class CategoriesController(ApplicationDbContext context) : ControllerBase
@@ -15,21 +15,8 @@ public class CategoriesController(ApplicationDbContext context) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false)
     {
-        var query = context.Categories.AsQueryable();
-        
-        if (!includeDeleted)
-            query = query.Where(c => c.DeletedAt == null);
-        
-        var categories = await query
-            .Select(c => new {
-                c.Id,
-                c.Name,
-                c.Slug,
-                c.Description,
-                c.CreatedAt,
-                c.UpdatedAt,
-                c.DeletedAt
-            })
+        var categories = await context.Categories
+            .Where(c => includeDeleted || c.DeletedAt == null)
             .ToListAsync();
 
         return Ok(categories);
@@ -48,17 +35,7 @@ public class CategoriesController(ApplicationDbContext context) : ControllerBase
     public async Task<IActionResult> GetById(Guid id)
     {
         var category = await context.Categories.FindAsync(id);
-        if (category == null) return NotFound();
-
-        return Ok(new {
-            category.Id,
-            category.Name,
-            category.Slug,
-            category.Description,
-            category.CreatedAt,
-            category.UpdatedAt,
-            category.DeletedAt
-        });
+        return category == null ? NotFound() : Ok(category);
     }
     
     [HttpPut("{id:guid}")]

@@ -7,7 +7,7 @@ using RipperdocShop.Models.DTOs;
 
 namespace RipperdocShop.Controllers.Admin;
 
-[Route("api/admin/[controller]")]
+[Route("api/admin/brands")]
 [ApiController]
 [Authorize(Roles = "Admin")]
 public class BrandsController(ApplicationDbContext context) : ControllerBase
@@ -15,28 +15,15 @@ public class BrandsController(ApplicationDbContext context) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false)
     {
-        var query = context.Brands.AsQueryable();
-        
-        if (!includeDeleted)
-            query = query.Where(c => c.DeletedAt == null);
-        
-        var brands = await query
-            .Select(c => new {
-                c.Id,
-                c.Name,
-                c.Slug,
-                c.Description,
-                c.CreatedAt,
-                c.UpdatedAt,
-                c.DeletedAt
-            })
+        var brands = await context.Brands
+            .Where(b => includeDeleted || b.DeletedAt == null)
             .ToListAsync();
 
         return Ok(brands);
     }
     
     [HttpPost]
-    public async Task<IActionResult> Create(CategoryDto dto)
+    public async Task<IActionResult> Create(BrandDto dto)
     {
         var brand = new Brand(dto.Name, dto.Description);
         context.Brands.Add(brand);
@@ -48,21 +35,11 @@ public class BrandsController(ApplicationDbContext context) : ControllerBase
     public async Task<IActionResult> GetById(Guid id)
     {
         var brand = await context.Brands.FindAsync(id);
-        if (brand == null) return NotFound();
-
-        return Ok(new {
-            brand.Id,
-            brand.Name,
-            brand.Slug,
-            brand.Description,
-            brand.CreatedAt,
-            brand.UpdatedAt,
-            brand.DeletedAt
-        });
+        return brand == null ? NotFound() : Ok(brand);
     }
     
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, CategoryDto dto)
+    public async Task<IActionResult> Update(Guid id, BrandDto dto)
     {
         var brand = await context.Brands.FindAsync(id);
         if (brand == null) return NotFound();
