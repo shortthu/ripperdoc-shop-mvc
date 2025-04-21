@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RipperdocShop.Models.Entities;
 using RipperdocShop.Models.Identities;
+using RipperdocShop.Interceptors;
 
 namespace RipperdocShop.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+public class ApplicationDbContext(
+    DbContextOptions<ApplicationDbContext> options,
+    TimestampInterceptor timestampInterceptor)
     : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<Category> Categories { get; set; }
@@ -16,9 +19,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
-    
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        optionsBuilder.AddInterceptors(timestampInterceptor);
         optionsBuilder.UseSnakeCaseNamingConvention();
     }
 
