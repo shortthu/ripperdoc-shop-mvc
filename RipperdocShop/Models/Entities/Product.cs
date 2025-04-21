@@ -3,7 +3,7 @@ using RipperdocShop.Utils;
 
 namespace RipperdocShop.Models.Entities;
 
-public class Product
+public class Product : ITimestampedEntity, ISoftDeletable
 {
     public Guid Id { get; private set; }
     
@@ -28,9 +28,9 @@ public class Product
     
     public bool IsFeatured { get; private set; }
     
-    public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
-    public DateTime? DeletedAt { get; private set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
     
     [Required]
     public Guid CategoryId { get; private set; }

@@ -3,7 +3,7 @@ using RipperdocShop.Utils;
 
 namespace RipperdocShop.Models.Entities;
 
-public class Category
+public class Category : ITimestampedEntity, ISoftDeletable
 {
     public Guid Id { get; private set; }
     
@@ -19,9 +19,9 @@ public class Category
     [StringLength(1000)]
     public string Description { get; private set; } = string.Empty;
     
-    public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
-    public DateTime? DeletedAt { get; private set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
     
     private Category() { }
 

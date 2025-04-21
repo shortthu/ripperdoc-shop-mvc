@@ -3,7 +3,7 @@ using RipperdocShop.Models.Identities;
 
 namespace RipperdocShop.Models.Entities;
 
-public class ProductRating
+public class ProductRating : ITimestampedEntity, ISoftDeletable
 {
     public Guid Id { get; private set; }
     
@@ -14,9 +14,9 @@ public class ProductRating
     [StringLength(3000)]
     public string? Comment { get; private set; } = string.Empty;
     
-    public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
-    public DateTime? DeletedAt { get; private set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
     
     public Guid ProductId { get; private set; }
     public Product Product { get; private set; } = null!;

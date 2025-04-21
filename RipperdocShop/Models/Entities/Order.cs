@@ -12,14 +12,14 @@ public enum OrderStatus
     Cancelled,
 }
 
-public class Order
+public class Order : ITimestampedEntity
 {
     public Guid Id { get; private set; }
     public decimal TotalPrice { get; private set; }
     public OrderStatus Status { get; private set; }
     
-    public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
     
     public Guid UserId { get; private set; }
     public AppUser User { get; private set; } = null!;

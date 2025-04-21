@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using RipperdocShop.Utils;
-using Slugify;
 
 namespace RipperdocShop.Models.Entities;
 
-public class Brand
+public class Brand : ITimestampedEntity, ISoftDeletable
 {
     public Guid Id { get; private set; }
     
@@ -21,9 +20,9 @@ public class Brand
     [StringLength(1000)]
     public string Description { get; private set; } = string.Empty;
     
-    public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
-    public DateTime? DeletedAt { get; private set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
     
     public Brand() { }
 
