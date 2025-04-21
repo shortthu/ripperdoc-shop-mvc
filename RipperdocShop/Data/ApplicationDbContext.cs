@@ -39,28 +39,29 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             e.HasKey(c => c.Id);
             e.HasIndex(c => c.Slug).IsUnique();
-            e.Property(c => c.Slug).IsRequired().HasMaxLength(100);
-            e.Property(c => c.Name).IsRequired().HasMaxLength(120);
-            e.Property(c => c.Description).IsRequired().HasMaxLength(500);
+            e.Property(c => c.Slug).IsRequired().HasMaxLength(120);
+            e.Property(c => c.Name).IsRequired().HasMaxLength(100);
+            e.Property(c => c.Description).IsRequired().HasMaxLength(1000);
         });
-        
+
         builder.Entity<Brand>(e =>
         {
             e.HasKey(b => b.Id);
             e.HasIndex(b => b.Slug).IsUnique();
-            e.Property(b => b.Slug).IsRequired().HasMaxLength(100);
-            e.Property(b => b.Name).IsRequired().HasMaxLength(120);
-            e.Property(b => b.Description).IsRequired().HasMaxLength(500);
+            e.Property(b => b.Slug).IsRequired().HasMaxLength(120);
+            e.Property(b => b.Name).IsRequired().HasMaxLength(100);
+            e.Property(b => b.Description).IsRequired().HasMaxLength(1000);
         });
-        
+
         builder.Entity<Product>(e =>
         {
             e.HasKey(p => p.Id);
             e.HasIndex(p => p.Slug).IsUnique();
-            e.Property(p => p.Slug).IsRequired().HasMaxLength(100);
-            e.Property(p => p.Name).IsRequired().HasMaxLength(120);
-            e.Property(p => p.Description).IsRequired().HasMaxLength(500);
+            e.Property(p => p.Slug).IsRequired().HasMaxLength(120);
+            e.Property(p => p.Name).IsRequired().HasMaxLength(100);
+            e.Property(p => p.Description).IsRequired().HasMaxLength(1000);
             e.Property(p => p.ImageUrl).IsRequired();
+            e.Property(p => p.Price).HasColumnType("decimal(18,2)");
 
             e.HasOne(p => p.Category)
                 .WithMany()
@@ -77,8 +78,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             e.HasKey(r => r.Id);
             e.Property(r => r.Score).IsRequired();
-            e.Property(r => r.Comment).HasMaxLength(500);
-            
+            e.Property(r => r.Comment).HasMaxLength(3000);
+
             e.HasOne(r => r.Product)
                 .WithMany()
                 .HasForeignKey(r => r.ProductId)
@@ -89,7 +90,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         builder.Entity<Order>(e =>
         {
             e.HasKey(o => o.Id);
@@ -101,7 +102,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         builder.Entity<OrderItem>(e =>
         {
             e.HasKey(oi => oi.Id);
@@ -115,7 +116,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .WithMany()
                 .HasForeignKey(oi => oi.ProductId);
         });
-        
+
         builder.Entity<CartItem>(e =>
         {
             e.HasKey(ci => ci.Id);
@@ -132,10 +133,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(ci => ci.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-        
-        builder.Entity<AppUser>(e =>
-        {
-            e.Property(u => u.IsDisabled).HasDefaultValue(false);
-        });
+
+        builder.Entity<AppUser>(e => { e.Property(u => u.IsDisabled).HasDefaultValue(false); });
     }
 }
