@@ -165,10 +165,12 @@ public class ProductsController(ApplicationDbContext context) : ControllerBase
         
     }
 
-    [HttpDelete("{id:guid}/permanent")]
+    [HttpDelete("{id:guid}/hard")]
     public async Task<IActionResult> DeletePermanently(Guid id)
     {
-        var product = await context.Products.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Id == id);
+        var product = await context.Products
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(p => p.Id == id);
         if (product == null) return NotFound();
 
         context.Products.Remove(product);

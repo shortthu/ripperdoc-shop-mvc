@@ -16,7 +16,7 @@ public class Product
     public string Slug { get; private set; } = string.Empty;
     
     [Required]
-    [StringLength(500)]
+    [StringLength(1000)]
     public string Description { get; private set; } = string.Empty;
     
     [Required]
@@ -38,10 +38,7 @@ public class Product
     
     public Guid? BrandId { get; private set; }
     public Brand? Brand { get; private set; }
-    
-    // TODO: Do something about this
-    public List<ProductRating> ProductRatings { get; private set; } = [];
-    
+
     private Product() { }
 
     public Product(string name, string description, string imageUrl, decimal price, Category category, 
@@ -117,7 +114,7 @@ public class Product
     public void Restore()
     {
         if (DeletedAt == null)
-            throw new InvalidOperationException("It's still alive, y'know. (Product is not deleted)");
+            throw new InvalidOperationException("It's still alive, y'know. (Product is not already deleted)");
         
         DeletedAt = null;
         UpdatedAt = DateTime.UtcNow;

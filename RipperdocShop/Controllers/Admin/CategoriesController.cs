@@ -59,28 +59,42 @@ public class CategoriesController(ApplicationDbContext context) : ControllerBase
         var category = await context.Categories.FindAsync(id);
         if (category == null) return NotFound();
 
-        category.SoftDelete();
-        await context.SaveChangesAsync();
-
-        return NoContent();
+        try
+        {
+            category.SoftDelete();
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new { error = e.Message });
+        }
     }
-    
+
     [HttpPost("{id:guid}/restore")]
     public async Task<IActionResult> Restore(Guid id)
     {
         var category = await context.Categories.FindAsync(id);
         if (category == null) return NotFound();
 
-        category.Restore();
-        await context.SaveChangesAsync();
-
-        return NoContent();
+        try
+        {
+            category.Restore();
+            await context.SaveChangesAsync();
+            return NoContent();
+        } catch (InvalidOperationException e)
+        {
+            return BadRequest(new { error = e.Message });
+        }
+        
     }
 
     [HttpDelete("{id:guid}/hard")]
-    public async Task<IActionResult> HardDelete(Guid id)
+    public async Task<IActionResult> DeletePermanently(Guid id)
     {
-        var category = await context.Categories.FindAsync(id);
+        var category = await context.Categories
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(p => p.Id == id);
         if (category == null) return NotFound();
 
         context.Categories.Remove(category);

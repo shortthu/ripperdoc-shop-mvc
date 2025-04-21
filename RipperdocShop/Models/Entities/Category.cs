@@ -16,7 +16,7 @@ public class Category
     public string Slug { get; private set; } = string.Empty;
     
     [Required]
-    [StringLength(500)]
+    [StringLength(1000)]
     public string Description { get; private set; } = string.Empty;
     
     public DateTime CreatedAt { get; private set; }

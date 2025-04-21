@@ -59,28 +59,42 @@ public class BrandsController(ApplicationDbContext context) : ControllerBase
         var brand = await context.Brands.FindAsync(id);
         if (brand == null) return NotFound();
 
-        brand.SoftDelete();
-        await context.SaveChangesAsync();
-
-        return NoContent();
+        try
+        {
+            brand.SoftDelete();
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new { error = e.Message });
+        }
     }
-    
+
     [HttpPost("{id:guid}/restore")]
     public async Task<IActionResult> Restore(Guid id)
     {
         var brand = await context.Brands.FindAsync(id);
         if (brand == null) return NotFound();
 
-        brand.Restore();
-        await context.SaveChangesAsync();
-
-        return NoContent();
+        try
+        {
+            brand.Restore();
+            await context.SaveChangesAsync();
+            return NoContent();
+        } catch (InvalidOperationException e)
+        {
+            return BadRequest(new { error = e.Message });
+        }
+        
     }
 
     [HttpDelete("{id:guid}/hard")]
-    public async Task<IActionResult> HardDelete(Guid id)
+    public async Task<IActionResult> DeletePermanently(Guid id)
     {
-        var brand = await context.Brands.FindAsync(id);
+        var brand = await context.Brands
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(p => p.Id == id);
         if (brand == null) return NotFound();
 
         context.Brands.Remove(brand);
