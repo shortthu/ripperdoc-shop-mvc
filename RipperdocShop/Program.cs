@@ -1,10 +1,17 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Microsoft.IdentityModel.Tokens;
 using RipperdocShop.Data;
 using RipperdocShop.Models.Identities;
 using RipperdocShop.Interceptors;
+using RipperdocShop.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var jwtSecret = builder.Configuration["Jwt:Secret"];
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
@@ -16,16 +23,64 @@ builder.Services.AddSingleton<TimestampInterceptor>();
 builder.Services.AddIdentity<AppUser, IdentityRole<Guid>>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    // Cookie for Razor Pages (Customers) - Default
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+    // Jwt bearer for API (Admin). Not actively using it for now
+    .AddJwtBearer("Jwt", options =>
+    {
+        options.RequireHttpsMetadata = false; // for dev
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                jwtSecret ?? throw new InvalidOperationException())),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddScoped<JwtService>();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    var jwtScheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your JWT token like: 'Bearer {token}'",
+    };
+    
+    options.AddSecurityDefinition("Bearer", jwtScheme);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {jwtScheme,  [] }
+    });
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.UseMigrationsEndPoint();
 }
 else
@@ -40,6 +95,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

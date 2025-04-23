@@ -11,9 +11,11 @@
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="14.0.0" />
         <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.15" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.15" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.15" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.15" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.15">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,6 +24,7 @@
         <PackageReference Include="Npgsql" Version="8.0.7" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
         <PackageReference Include="Slugify.Core" Version="5.1.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
     </ItemGroup>
 
     <ItemGroup>
