@@ -5,7 +5,6 @@ namespace RipperdocShop.Data;
 
 public static class IdentitySeeder
 {
-    
     public static async Task SeedAsync(IServiceProvider services, string adminEmail, string adminPassword)
     {
         using var scope = services.CreateScope();
@@ -29,11 +28,6 @@ public static class IdentitySeeder
         }
         
         // Seed Admin User
-
-        // if (!await roleManager.RoleExistsAsync("Admin"))
-        // {
-        //     await roleManager.CreateAsync(new IdentityRole("Admin"));
-        // }
 
         var adminUser = await userManager.FindByEmailAsync(adminEmail);
         if (adminUser == null)

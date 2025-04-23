@@ -10,6 +10,8 @@ namespace RipperdocShop.Controllers.Admin;
 [Route("api/admin/brands")]
 [ApiController]
 [Authorize(Roles = "Admin")]
+// [Authorize(AuthenticationSchemes = "Jwt", Roles = "Admin")]
+
 public class BrandsController(ApplicationDbContext context) : ControllerBase
 {
     [HttpGet]

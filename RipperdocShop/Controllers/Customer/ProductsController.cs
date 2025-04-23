@@ -15,7 +15,6 @@ public class ProductsController(ApplicationDbContext db) : Controller
         var product = await db.Products
             .Include(p => p.Category)
             .Include(p => p.Brand)
-            .Include(p => p.ProductRatings)
             .FirstOrDefaultAsync(p => p.Slug == slug && p.DeletedAt != null);
 
         if (product is null) return NotFound();
