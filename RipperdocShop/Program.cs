@@ -29,34 +29,36 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    })
-    // Cookie for Razor Pages (Customers) - Default
-    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-    // Jwt bearer for API (Admin). Not actively using it for now
-    .AddJwtBearer("Jwt", options =>
-    {
-        options.RequireHttpsMetadata = false; // for dev
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateIssuerSigningKey = true,
-            ValidateLifetime = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                jwtSecret ?? throw new InvalidOperationException())),
-            ClockSkew = TimeSpan.Zero
-        };
-    });
+// builder.Services.AddAuthentication(options =>
+//     {
+//         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//         options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//         options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//     })
+//     // Cookie for Razor Pages (Customers) - Default
+//     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+//     // Jwt bearer for API (Admin). Not actively using it for now
+//     .AddJwtBearer("Jwt", options =>
+//     {
+//         options.RequireHttpsMetadata = false; // for dev
+//         options.SaveToken = true;
+//         options.TokenValidationParameters = new TokenValidationParameters
+//         {
+//             ValidateIssuer = false,
+//             ValidateAudience = false,
+//             ValidateIssuerSigningKey = true,
+//             ValidateLifetime = true,
+//             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+//                 jwtSecret ?? throw new InvalidOperationException())),
+//             ClockSkew = TimeSpan.Zero
+//         };
+//     });
 
 builder.Services.AddScoped<JwtService>();
 
 builder.Services.AddSwaggerGen(options =>
 {
+    // JWT Bearer
     var jwtScheme = new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -64,7 +66,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Enter your JWT token like: 'Bearer {token}'",
+        Description = "Enter your JWT token like: 'Bearer your_token_here'",
     };
     
     options.AddSecurityDefinition("Bearer", jwtScheme);
@@ -72,6 +74,31 @@ builder.Services.AddSwaggerGen(options =>
     {
         {jwtScheme,  [] }
     });
+    
+    // Cookie
+    options.AddSecurityDefinition("cookieAuth", new OpenApiSecurityScheme
+    {
+        Name = "Cookie",
+        Type = SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Description = "Paste your auth cookie like: .AspNetCore.Identity.Application=your_token_here"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "cookieAuth"
+                }
+            },
+            []
+        }
+    });
+
 });
 
 var app = builder.Build();
