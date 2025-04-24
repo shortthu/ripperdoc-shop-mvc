@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ namespace RipperdocShop.Controllers.Admin;
 
 [Route("api/admin/categories")]
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 public class CategoriesController(ApplicationDbContext context) : ControllerBase
 {
     [HttpGet]

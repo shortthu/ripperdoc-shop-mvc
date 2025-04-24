@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +8,9 @@ using RipperdocShop.Models.Entities;
 
 namespace RipperdocShop.Controllers.Admin;
 
-[ApiController]
 [Route("api/admin/products")]
-[Authorize(Roles = "Admin")]
+[ApiController]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 public class ProductsController(ApplicationDbContext context) : ControllerBase
 {
     [HttpGet]

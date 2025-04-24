@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RipperdocShop.Data;
@@ -6,6 +8,7 @@ namespace RipperdocShop.Controllers.Admin;
 
 [Route("api/admin/ratings")]
 [ApiController]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 public class ProductRatingsController(ApplicationDbContext context) : ControllerBase
 {
     [HttpGet("by-product/{productId:guid}")]
