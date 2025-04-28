@@ -35,6 +35,8 @@ builder.Services.AddScoped<ICategoryCoreService, CategoryCoreService>();
 builder.Services.AddScoped<IAdminCategoryService, AdminCategoryService>();
 builder.Services.AddScoped<IProductCoreService, ProductCoreService>();
 builder.Services.AddScoped<IAdminProductService, AdminProductService>();
+builder.Services.AddScoped<IProductRatingCoreService, ProductRatingCoreService>();
+builder.Services.AddScoped<IAdminProductRatingService, AdminProductRatingService>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();

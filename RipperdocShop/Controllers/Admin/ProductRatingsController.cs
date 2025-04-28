@@ -2,91 +2,121 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using RipperdocShop.Data;
+using RipperdocShop.Models.DTOs;
+using RipperdocShop.Services.Admin;
+using RipperdocShop.Services.Core;
 
 namespace RipperdocShop.Controllers.Admin;
 
 [Route("api/admin/ratings")]
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-public class ProductRatingsController(ApplicationDbContext context) : ControllerBase
+public class ProductRatingsController(
+    IAdminProductRatingService productRatingService,
+    IProductRatingCoreService productRatingCoreService) : ControllerBase
 {
     [HttpGet("by-product/{productId:guid}")]
-    public async Task<IActionResult> GetByProduct(Guid productId, [FromQuery] bool includeDeleted = false)
+    public async Task<IActionResult> GetByProduct(Guid productId, [FromQuery] bool includeDeleted = false,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var ratings = await context.ProductRatings
-            .Where(r => r.ProductId == productId)
-            .Where(r => includeDeleted || r.DeletedAt == null)
-            .OrderByDescending(r => r.CreatedAt)
-            .Select(r => new
-            {
-                r.Id,
-                r.Score,
-                r.Comment,
-                r.CreatedAt,
-                r.UpdatedAt,
-                r.UserId,
-                Username = r.User.UserName
-            })
-            .ToListAsync();
+        var (ratings, totalCount, totalPages) =
+            await productRatingCoreService.GetByProductAsync(productId, includeDeleted, page, pageSize);
 
-        return Ok(ratings);
+        var response = new ProductRatingResponse()
+        {
+            Ratings = ratings,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
+
+        return response.Ratings.IsNullOrEmpty() ? NotFound(new ProblemDetails
+        {
+            Status = StatusCodes.Status404NotFound,
+            Title = "Product not found",
+            Detail = $"Product with ID {productId} does not exist"
+        }) : Ok(response);
     }
 
     [HttpGet("by-user/{userId:guid}")]
-    public async Task<IActionResult> GetByUser(Guid userId, [FromQuery] bool includeDeleted = false)
+    public async Task<IActionResult> GetByUser(Guid userId, [FromQuery] bool includeDeleted = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var ratings = await context.ProductRatings
-            .Where(r => r.UserId == userId)
-            .Where(r => includeDeleted || r.DeletedAt == null)
-            .OrderByDescending(r => r.CreatedAt)
-            .Select(r => new
-            {
-                r.Id,
-                r.Score,
-                r.Comment,
-                r.CreatedAt,
-                r.UpdatedAt,
-                r.ProductId,
-                ProductName = r.Product.Name
-            })
-            .ToListAsync();
+        var (ratings, totalCount, totalPages) =
+            await productRatingCoreService.GetByUserAsync(userId, includeDeleted, page, pageSize);
 
-        return Ok(ratings);
+        var response = new ProductRatingResponse()
+        {
+            Ratings = ratings,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
+
+        return response.Ratings.IsNullOrEmpty() ? NotFound(new ProblemDetails
+        {
+            Status = StatusCodes.Status404NotFound,
+            Title = "Product not found",
+            Detail = $"Product with ID {userId} does not exist"
+        }) : Ok(response);
     }
-    
+
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SoftDelete(Guid id)
     {
-        var ratings = await context.ProductRatings.FindAsync(id);
-        if (ratings == null) return NotFound();
-
         try
         {
-            ratings.SoftDelete();
-            await context.SaveChangesAsync();
+            var product = await productRatingService.SoftDeleteAsync(id);
+            if (product == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Rating with ID {id} does not exist"
+                });
+
             return NoContent();
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new { error = e.Message });
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
         }
     }
 
     [HttpPost("{id:guid}/restore")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Restore(Guid id)
     {
-        var ratings = await context.ProductRatings.FindAsync(id);
-        if (ratings == null) return NotFound();
-
         try
         {
-            ratings.Restore();
-            await context.SaveChangesAsync();
+            var product = await productRatingService.RestoreAsync(id);
+            if (product == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Rating with ID {id} does not exist"
+                });
+
             return NoContent();
-        } catch (InvalidOperationException e)
+        }
+        catch (InvalidOperationException e)
         {
-            return BadRequest(new { error = e.Message });
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
         }
     }
 }
