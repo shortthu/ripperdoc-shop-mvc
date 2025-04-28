@@ -31,6 +31,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddScoped<IBrandCoreService, BrandCoreService>();
 builder.Services.AddScoped<IAdminBrandService, AdminBrandService>();
+builder.Services.AddScoped<ICategoryCoreService, CategoryCoreService>();
+builder.Services.AddScoped<IAdminCategoryService, AdminCategoryService>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();

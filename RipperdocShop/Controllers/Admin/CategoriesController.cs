@@ -1,106 +1,187 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RipperdocShop.Data;
-using RipperdocShop.Models.Entities;
 using RipperdocShop.Models.DTOs;
+using RipperdocShop.Services.Admin;
+using RipperdocShop.Services.Core;
 
 namespace RipperdocShop.Controllers.Admin;
 
 [Route("api/admin/categories")]
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-public class CategoriesController(ApplicationDbContext context) : ControllerBase
+public class CategoriesController(
+    IAdminCategoryService adminCategoryService,
+    ICategoryCoreService categoryCoreService)
+    : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false)
     {
-        var categories = await context.Categories
-            .Where(c => includeDeleted || c.DeletedAt == null)
-            .ToListAsync();
-
+        var categories = await adminCategoryService.GetAllAsync(includeDeleted);
         return Ok(categories);
     }
     
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(CategoryDto dto)
     {
-        var category = new Category(dto.Name, dto.Description);
-        context.Categories.Add(category);
-        await context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
+        try
+        {
+            var category = await adminCategoryService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Could not create category",
+                Detail = e.Message
+            });
+        }
     }
     
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var category = await context.Categories.FindAsync(id);
-        return category == null ? NotFound() : Ok(category);
+        var category = await categoryCoreService.GetByIdAsync(id);
+        
+        if (category == null)
+            return NotFound(new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Category not found",
+                Detail = $"Category with ID {id} does not exist"
+            });
+            
+        return Ok(category);
     }
     
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update(Guid id, CategoryDto dto)
     {
-        var category = await context.Categories.FindAsync(id);
-        if (category == null) return NotFound();
-        
-        if (category.DeletedAt != null)
-            return BadRequest("Cannot update a deleted category. Restore it first, choom.");
-
-        category.UpdateDetails(dto.Name, dto.Description);
-        await context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> SoftDelete(Guid id)
-    {
-        var category = await context.Categories.FindAsync(id);
-        if (category == null) return NotFound();
-
         try
         {
-            category.SoftDelete();
-            await context.SaveChangesAsync();
+            var category = await adminCategoryService.UpdateAsync(id, dto);
+            
+            if (category == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Category with ID {id} does not exist"
+                });
+                
             return NoContent();
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new { error = e.Message });
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
+        }
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SoftDelete(Guid id)
+    {
+        try
+        {
+            var category = await adminCategoryService.SoftDeleteAsync(id);
+            
+            if (category == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Category with ID {id} does not exist"
+                });
+                
+            return NoContent();
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
         }
     }
 
     [HttpPost("{id:guid}/restore")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Restore(Guid id)
     {
-        var category = await context.Categories.FindAsync(id);
-        if (category == null) return NotFound();
-
         try
         {
-            category.Restore();
-            await context.SaveChangesAsync();
+            var category = await adminCategoryService.RestoreAsync(id);
+            
+            if (category == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Category with ID {id} does not exist"
+                });
+                
             return NoContent();
-        } catch (InvalidOperationException e)
-        {
-            return BadRequest(new { error = e.Message });
         }
-        
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
+        }
     }
 
     [HttpDelete("{id:guid}/hard")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeletePermanently(Guid id)
     {
-        var category = await context.Categories
-            .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(p => p.Id == id);
-        if (category == null) return NotFound();
-
-        context.Categories.Remove(category);
-        await context.SaveChangesAsync();
-
-        return NoContent();
+        try
+        {
+            var category = await adminCategoryService.DeletePermanentlyAsync(id);
+            
+            if (category == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Category with ID {id} does not exist"
+                });
+                
+            return NoContent();
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
+        }
     }
 }
