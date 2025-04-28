@@ -6,6 +6,8 @@ using RipperdocShop.Services;
 
 namespace RipperdocShop.Controllers;
 
+// This route is ONLY for the Admin user
+
 [ApiController]
 [Route("api/auth")]
 public class AuthController(
@@ -26,8 +28,19 @@ public class AuthController(
             return Unauthorized("Wrong creds, choom");
 
         var roles = await userManager.GetRolesAsync(user);
+        if (!roles.Contains("Admin"))
+            return Unauthorized("Looking at the wrong place, choom");
+        
         var token = jwt.GenerateToken(user, roles);
+        
+        Response.Cookies.Append("AdminAccessToken", token, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddHours(2)
+        });
 
-        return Ok(new { token });
+        return Ok(new { message = "Access granted" });
     }
 }

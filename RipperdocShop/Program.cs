@@ -38,13 +38,24 @@ builder.Services.AddAuthentication()
          options.SaveToken = true;
          options.TokenValidationParameters = new TokenValidationParameters
          {
-             ValidateIssuer = false,
-             ValidateAudience = false,
+             ValidateIssuer = true,
+             ValidateAudience = true,
+             ValidIssuer = builder.Configuration["Jwt:Issuer"],
+             ValidAudience = builder.Configuration["Jwt:Audience"],
              ValidateIssuerSigningKey = true,
              ValidateLifetime = true,
              IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                  jwtSecret ?? throw new InvalidOperationException())),
              ClockSkew = TimeSpan.Zero
+         };
+         options.Events = new JwtBearerEvents
+         {
+             OnMessageReceived = context =>
+             {
+                 if (context.Request.Cookies.TryGetValue("AdminAccessToken", out var token))
+                     context.Token = token;
+                 return Task.CompletedTask;
+             }
          };
      });
 
@@ -73,6 +84,17 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {jwtScheme,  [] }
+    });
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevCors", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+            .AllowCredentials()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
