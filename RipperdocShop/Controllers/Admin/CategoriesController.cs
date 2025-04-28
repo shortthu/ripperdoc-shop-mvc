@@ -11,7 +11,7 @@ namespace RipperdocShop.Controllers.Admin;
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 public class CategoriesController(
-    IAdminCategoryService adminCategoryService,
+    IAdminCategoryService categoryService,
     ICategoryCoreService categoryCoreService)
     : ControllerBase
 {
@@ -19,7 +19,7 @@ public class CategoriesController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false)
     {
-        var categories = await adminCategoryService.GetAllAsync(includeDeleted);
+        var categories = await categoryService.GetAllAsync(includeDeleted);
         return Ok(categories);
     }
     
@@ -30,7 +30,7 @@ public class CategoriesController(
     {
         try
         {
-            var category = await adminCategoryService.CreateAsync(dto);
+            var category = await categoryService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
         }
         catch (Exception e)
@@ -70,7 +70,7 @@ public class CategoriesController(
     {
         try
         {
-            var category = await adminCategoryService.UpdateAsync(id, dto);
+            var category = await categoryService.UpdateAsync(id, dto);
             
             if (category == null)
                 return NotFound(new ProblemDetails
@@ -101,7 +101,7 @@ public class CategoriesController(
     {
         try
         {
-            var category = await adminCategoryService.SoftDeleteAsync(id);
+            var category = await categoryService.SoftDeleteAsync(id);
             
             if (category == null)
                 return NotFound(new ProblemDetails
@@ -132,7 +132,7 @@ public class CategoriesController(
     {
         try
         {
-            var category = await adminCategoryService.RestoreAsync(id);
+            var category = await categoryService.RestoreAsync(id);
             
             if (category == null)
                 return NotFound(new ProblemDetails
@@ -162,7 +162,7 @@ public class CategoriesController(
     {
         try
         {
-            var category = await adminCategoryService.DeletePermanentlyAsync(id);
+            var category = await categoryService.DeletePermanentlyAsync(id);
             
             if (category == null)
                 return NotFound(new ProblemDetails

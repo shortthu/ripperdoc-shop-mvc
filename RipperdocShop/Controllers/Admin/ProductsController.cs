@@ -15,14 +15,14 @@ namespace RipperdocShop.Controllers.Admin;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 public class ProductsController(
     ApplicationDbContext context,
-    IAdminProductService adminProductService, 
+    IAdminProductService productService, 
     IProductCoreService productCoreService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false, 
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (products, totalCount, totalPages) = await adminProductService.GetAllAsync(includeDeleted, page, pageSize);
+        var (products, totalCount, totalPages) = await productService.GetAllAsync(includeDeleted, page, pageSize);
         var response = new ProductResponse()
         {
             Products = products,
@@ -58,7 +58,7 @@ public class ProductsController(
             if (brand == null) return BadRequest("Brand not found");
         }
 
-        var product = await adminProductService.CreateAsync(dto, category, brand);;
+        var product = await productService.CreateAsync(dto, category, brand);;
 
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
@@ -78,7 +78,7 @@ public class ProductsController(
 
         try
         {
-            var product = await adminProductService.UpdateAsync(id, dto, category, brand);
+            var product = await productService.UpdateAsync(id, dto, category, brand);
             if (product == null)
                 return NotFound(new ProblemDetails
                 {
@@ -108,7 +108,7 @@ public class ProductsController(
     {
         try
         {
-            var product = await adminProductService.SetFeaturedAsync(id);
+            var product = await productService.SetFeaturedAsync(id);
             if (product == null)
                 return NotFound(new ProblemDetails
                 {
@@ -138,7 +138,7 @@ public class ProductsController(
     {
         try
         {
-            var product = await adminProductService.RemoveFeaturedAsync(id);
+            var product = await productService.RemoveFeaturedAsync(id);
             if (product == null)
                 return NotFound(new ProblemDetails
                 {
@@ -169,7 +169,7 @@ public class ProductsController(
     {
         try
         {
-            var product = await adminProductService.SoftDeleteAsync(id);
+            var product = await productService.SoftDeleteAsync(id);
             if (product == null)
                 return NotFound(new ProblemDetails
                 {
@@ -200,7 +200,7 @@ public class ProductsController(
     {
         try
         {
-            var product = await adminProductService.RestoreAsync(id);
+            var product = await productService.RestoreAsync(id);
             if (product == null)
                 return NotFound(new ProblemDetails
                 {
@@ -230,7 +230,7 @@ public class ProductsController(
     {
         try
         {
-            var product = await adminProductService.DeletePermanentlyAsync(id);
+            var product = await productService.DeletePermanentlyAsync(id);
             if (product == null)
                 return NotFound(new ProblemDetails
                 {

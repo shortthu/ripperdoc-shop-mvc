@@ -15,29 +15,34 @@ namespace RipperdocShop.Controllers.Admin;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 
 public class BrandsController(
-    ApplicationDbContext context, 
-    IAdminBrandService adminBrandService, 
+    IAdminBrandService brandService, 
     IBrandCoreService brandCoreService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false)
     {
-        var brands = await adminBrandService.GetAllAsync(includeDeleted);
-
+        var brands = await brandService.GetAllAsync(includeDeleted);
         return Ok(brands);
     }
     
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(BrandDto dto)
     {
         try
         {
-            var brand = await adminBrandService.CreateAsync(dto);
+            var brand = await brandService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = brand.Id }, brand);
         }
         catch (Exception e)
         {
-            return BadRequest(new { error = e.Message });
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Could not create brand",
+                Detail = e.Message
+            });
         }
     }
     
@@ -45,7 +50,12 @@ public class BrandsController(
     public async Task<IActionResult> GetById(Guid id)
     {
         var brand = await brandCoreService.GetByIdAsync(id);
-        return brand == null ? NotFound() : Ok(brand);
+        return brand == null ? NotFound(new ProblemDetails
+        {
+            Status = StatusCodes.Status404NotFound,
+            Title = "Brand not found",
+            Detail = $"Brand with ID {id} does not exist"
+        }) : Ok(brand);
     }
     
     [HttpPut("{id:guid}")]
@@ -56,7 +66,7 @@ public class BrandsController(
     {
         try
         {
-            var brand = await adminBrandService.UpdateAsync(id, dto);
+            var brand = await brandService.UpdateAsync(id, dto);
             if (brand == null)
                 return NotFound(new ProblemDetails
                 {
@@ -87,7 +97,7 @@ public class BrandsController(
     {
         try
         {
-            var brand = await adminBrandService.SoftDeleteAsync(id);
+            var brand = await brandService.SoftDeleteAsync(id);
             if (brand == null)
                 return NotFound(new ProblemDetails
                 {
@@ -118,7 +128,7 @@ public class BrandsController(
     {
         try
         {
-            var brand = await adminBrandService.RestoreAsync(id);
+            var brand = await brandService.RestoreAsync(id);
             if (brand == null)
                 return NotFound(new ProblemDetails
                 {
@@ -148,7 +158,7 @@ public class BrandsController(
     {
         try
         {
-            var brand = await adminBrandService.DeletePermanentlyAsync(id);
+            var brand = await brandService.DeletePermanentlyAsync(id);
             if (brand == null)
                 return NotFound(new ProblemDetails
                 {
