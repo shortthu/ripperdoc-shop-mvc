@@ -33,6 +33,8 @@ builder.Services.AddScoped<IBrandCoreService, BrandCoreService>();
 builder.Services.AddScoped<IAdminBrandService, AdminBrandService>();
 builder.Services.AddScoped<ICategoryCoreService, CategoryCoreService>();
 builder.Services.AddScoped<IAdminCategoryService, AdminCategoryService>();
+builder.Services.AddScoped<IProductCoreService, ProductCoreService>();
+builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();

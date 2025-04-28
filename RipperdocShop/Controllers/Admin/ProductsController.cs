@@ -5,42 +5,44 @@ using Microsoft.EntityFrameworkCore;
 using RipperdocShop.Data;
 using RipperdocShop.Models.DTOs;
 using RipperdocShop.Models.Entities;
+using RipperdocShop.Services.Admin;
+using RipperdocShop.Services.Core;
 
 namespace RipperdocShop.Controllers.Admin;
 
 [Route("api/admin/products")]
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-public class ProductsController(ApplicationDbContext context) : ControllerBase
+public class ProductsController(
+    ApplicationDbContext context,
+    IAdminProductService adminProductService, 
+    IProductCoreService productCoreService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false, 
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var query = context.Products
-            .Include(p => p.Category)
-            .Include(p => p.Brand)
-            .Where(p => includeDeleted || p.DeletedAt == null);
+        var (products, totalCount, totalPages) = await adminProductService.GetAllAsync(includeDeleted, page, pageSize);
+        var response = new ProductResponse()
+        {
+            Products = products,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
+        return Ok(response);
         
-        var totalItems = await query.CountAsync();
-        
-        var products = await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        return Ok(new { totalItems, products });
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var product = await context.Products
-            .Include(p => p.Category)
-            .Include(p => p.Brand)
-            .FirstOrDefaultAsync(p => p.Id == id);
-
-        return product == null ? NotFound() : Ok(product);
+        var product = await productCoreService.GetByIdAsync(id);
+        return product == null ? NotFound(new ProblemDetails
+        {
+            Status = StatusCodes.Status404NotFound,
+            Title = "Product not found",
+            Detail = $"Product with ID {id} does not exist"
+        }) : Ok(product);
     }
 
     [HttpPost]
@@ -48,7 +50,7 @@ public class ProductsController(ApplicationDbContext context) : ControllerBase
     {
         var category = await context.Categories.FindAsync(dto.CategoryId);
         if (category == null) return BadRequest("Category not found");
-
+        
         Brand? brand = null;
         if (dto.BrandId != null)
         {
@@ -56,10 +58,7 @@ public class ProductsController(ApplicationDbContext context) : ControllerBase
             if (brand == null) return BadRequest("Brand not found");
         }
 
-        var product = new Product(dto.Name, dto.Description, dto.ImageUrl, dto.Price, category, dto.IsFeatured, brand);
-
-        context.Products.Add(product);
-        await context.SaveChangesAsync();
+        var product = await adminProductService.CreateAsync(dto, category, brand);;
 
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
@@ -67,14 +66,6 @@ public class ProductsController(ApplicationDbContext context) : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, ProductDto dto)
     {
-        var product = await context.Products
-            .Include(p => p.Category)
-            .Include(p => p.Brand)
-            .FirstOrDefaultAsync(p => p.Id == id);
-
-        if (product == null) return NotFound();
-        if (product.DeletedAt != null) return BadRequest("Cannot update a deleted product");
-
         var category = await context.Categories.FindAsync(dto.CategoryId);
         if (category == null) return BadRequest("Category not found");
 
@@ -85,98 +76,179 @@ public class ProductsController(ApplicationDbContext context) : ControllerBase
             if (brand == null) return BadRequest("Brand not found");
         }
 
-        product.UpdateDetails(dto.Name, dto.Description, dto.ImageUrl, dto.Price, category, brand);
+        try
+        {
+            var product = await adminProductService.UpdateAsync(id, dto, category, brand);
+            if (product == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Product with ID {id} does not exist"
+                });
 
-        await context.SaveChangesAsync();
-        return NoContent();
+            return NoContent();
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
+        }
     }
     
     [HttpPost("{id:guid}/feature")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetFeatured(Guid id)
     {
-        var product = await context.Products.FindAsync(id);
-        if (product is not { DeletedAt: null })
-            return NotFound();
-
         try
         {
-            product.SetFeatured();
-            await context.SaveChangesAsync();
+            var product = await adminProductService.SetFeaturedAsync(id);
+            if (product == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Product with ID {id} does not exist"
+                });
+
             return NoContent();
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new { error = e.Message });
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
         }
     }
-
+    
     [HttpPost("{id:guid}/unfeature")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RemoveFeatured(Guid id)
     {
-        var product = await context.Products.FindAsync(id);
-        if (product is not { DeletedAt: null })
-            return NotFound();
-
         try
         {
-            product.RemoveFeatured();
-            await context.SaveChangesAsync();
+            var product = await adminProductService.RemoveFeaturedAsync(id);
+            if (product == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Product with ID {id} does not exist"
+                });
+
             return NoContent();
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new { error = e.Message });
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
         }
     }
 
 
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SoftDelete(Guid id)
     {
-        var product = await context.Products.FindAsync(id);
-        if (product == null) return NotFound();
-
         try
         {
-            product.SoftDelete();
-            await context.SaveChangesAsync();
+            var product = await adminProductService.SoftDeleteAsync(id);
+            if (product == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Product with ID {id} does not exist"
+                });
+
             return NoContent();
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new { error = e.Message });
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
         }
     }
 
+
     [HttpPost("{id:guid}/restore")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Restore(Guid id)
     {
-        var product = await context.Products.FindAsync(id);
-        if (product == null) return NotFound();
-
         try
         {
-            product.Restore();
-            await context.SaveChangesAsync();
+            var product = await adminProductService.RestoreAsync(id);
+            if (product == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Product with ID {id} does not exist"
+                });
+
             return NoContent();
-        } catch (InvalidOperationException e)
-        {
-            return BadRequest(new { error = e.Message });
         }
-        
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
+        }
     }
 
     [HttpDelete("{id:guid}/hard")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeletePermanently(Guid id)
     {
-        var product = await context.Products
-            .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(p => p.Id == id);
-        if (product == null) return NotFound();
+        try
+        {
+            var product = await adminProductService.DeletePermanentlyAsync(id);
+            if (product == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Product with ID {id} does not exist"
+                });
 
-        context.Products.Remove(product);
-        await context.SaveChangesAsync();
-
-        return NoContent();
+            return NoContent();
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
+        }
     }
 }
