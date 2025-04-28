@@ -9,6 +9,8 @@ using RipperdocShop.Data;
 using RipperdocShop.Models.Identities;
 using RipperdocShop.Interceptors;
 using RipperdocShop.Services;
+using RipperdocShop.Services.Admin;
+using RipperdocShop.Services.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole<Guid>>(options => options.Sig
                 .AddDefaultTokenProviders();
 
 builder.Services.AddAutoMapper(typeof(Program));
+
+builder.Services.AddScoped<IBrandCoreService, BrandCoreService>();
+builder.Services.AddScoped<IAdminBrandService, AdminBrandService>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();

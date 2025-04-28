@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using RipperdocShop.Data;
 using RipperdocShop.Models.Entities;
 using RipperdocShop.Models.DTOs;
+using RipperdocShop.Services.Admin;
+using RipperdocShop.Services.Core;
 
 namespace RipperdocShop.Controllers.Admin;
 
@@ -12,14 +14,15 @@ namespace RipperdocShop.Controllers.Admin;
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 
-public class BrandsController(ApplicationDbContext context) : ControllerBase
+public class BrandsController(
+    ApplicationDbContext context, 
+    IAdminBrandService adminBrandService, 
+    IBrandCoreService brandCoreService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false)
     {
-        var brands = await context.Brands
-            .Where(b => includeDeleted || b.DeletedAt == null)
-            .ToListAsync();
+        var brands = await adminBrandService.GetAllAsync(includeDeleted);
 
         return Ok(brands);
     }
@@ -27,81 +30,143 @@ public class BrandsController(ApplicationDbContext context) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(BrandDto dto)
     {
-        var brand = new Brand(dto.Name, dto.Description);
-        context.Brands.Add(brand);
-        await context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetById), new { id = brand.Id }, brand);
+        try
+        {
+            var brand = await adminBrandService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = brand.Id }, brand);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new { error = e.Message });
+        }
     }
     
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var brand = await context.Brands.FindAsync(id);
+        var brand = await brandCoreService.GetByIdAsync(id);
         return brand == null ? NotFound() : Ok(brand);
     }
     
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update(Guid id, BrandDto dto)
     {
-        var brand = await context.Brands.FindAsync(id);
-        if (brand == null) return NotFound();
-        
-        if (brand.DeletedAt != null)
-            return BadRequest("Cannot update a deleted brand. Restore it first, choom.");
-
-        brand.UpdateDetails(dto.Name, dto.Description);
-        await context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> SoftDelete(Guid id)
-    {
-        var brand = await context.Brands.FindAsync(id);
-        if (brand == null) return NotFound();
-
         try
         {
-            brand.SoftDelete();
-            await context.SaveChangesAsync();
+            var brand = await adminBrandService.UpdateAsync(id, dto);
+            if (brand == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Brand with ID {id} does not exist"
+                });
+
             return NoContent();
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new { error = e.Message });
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
         }
     }
 
-    [HttpPost("{id:guid}/restore")]
-    public async Task<IActionResult> Restore(Guid id)
-    {
-        var brand = await context.Brands.FindAsync(id);
-        if (brand == null) return NotFound();
 
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SoftDelete(Guid id)
+    {
         try
         {
-            brand.Restore();
-            await context.SaveChangesAsync();
+            var brand = await adminBrandService.SoftDeleteAsync(id);
+            if (brand == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Brand with ID {id} does not exist"
+                });
+
             return NoContent();
-        } catch (InvalidOperationException e)
-        {
-            return BadRequest(new { error = e.Message });
         }
-        
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
+        }
+    }
+
+
+    [HttpPost("{id:guid}/restore")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Restore(Guid id)
+    {
+        try
+        {
+            var brand = await adminBrandService.RestoreAsync(id);
+            if (brand == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Brand with ID {id} does not exist"
+                });
+
+            return NoContent();
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
+        }
     }
 
     [HttpDelete("{id:guid}/hard")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeletePermanently(Guid id)
     {
-        var brand = await context.Brands
-            .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(p => p.Id == id);
-        if (brand == null) return NotFound();
+        try
+        {
+            var brand = await adminBrandService.DeletePermanentlyAsync(id);
+            if (brand == null)
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = $"Brand with ID {id} does not exist"
+                });
 
-        context.Brands.Remove(brand);
-        await context.SaveChangesAsync();
-
-        return NoContent();
+            return NoContent();
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Invalid operation",
+                Detail = e.Message
+            });
+        }
     }
 }
