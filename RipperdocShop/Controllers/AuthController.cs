@@ -1,3 +1,6 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RipperdocShop.Models.DTOs;
@@ -13,9 +16,22 @@ namespace RipperdocShop.Controllers;
 public class AuthController(
     SignInManager<AppUser> signInManager,
     UserManager<AppUser> userManager,
-    JwtService jwt)
+    JwtService jwt,
+    IHostEnvironment env)
     : ControllerBase
 {
+    private CookieOptions GetAdminCookieOptions()
+    {
+        return new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = env.IsDevelopment() ? SameSiteMode.None : SameSiteMode.Lax,
+            Expires = DateTime.UtcNow.AddHours(2)
+            // Path = "/",
+        };
+    }
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
@@ -33,14 +49,33 @@ public class AuthController(
         
         var token = jwt.GenerateToken(user, roles);
         
-        Response.Cookies.Append("AdminAccessToken", token, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTime.UtcNow.AddHours(2)
-        });
+        Response.Cookies.Append("AdminAccessToken", token, GetAdminCookieOptions());
+        
+        // Return the token straight to the response on dev env to make it easier to test with Swagger
+        return env.IsDevelopment() 
+            ? Ok(new { message = "Access granted", token }) 
+            : Ok(new { message = "Access granted" });
+    }
+    
+    [HttpPost("logout")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("AdminAccessToken", GetAdminCookieOptions());
+        return Ok(new { message = "Wiped clean" });
+    }
+    
+    [HttpGet("whoami")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public IActionResult WhoAmI()
+    {
+        var username = User.FindFirstValue(ClaimTypes.Name) ?? "Unknown";
+        var roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
 
-        return Ok(new { message = "Access granted" });
+        return Ok(new
+        {
+            username,
+            roles
+        });
     }
 }

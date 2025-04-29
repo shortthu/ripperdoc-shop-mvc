@@ -29,6 +29,15 @@ builder.Services.AddIdentity<AppUser, IdentityRole<Guid>>(options => options.Sig
 
 builder.Services.AddAutoMapper(typeof(Program));
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.ConfigureApplicationCookie(options =>
+    {
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    });
+}
+
 builder.Services.AddScoped<IBrandCoreService, BrandCoreService>();
 builder.Services.AddScoped<IAdminBrandService, AdminBrandService>();
 builder.Services.AddScoped<ICategoryCoreService, CategoryCoreService>();
@@ -102,7 +111,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("DevCors", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins("http://127.0.0.1:5173")
             .AllowCredentials()
             .AllowAnyHeader()
             .AllowAnyMethod();
@@ -124,6 +133,8 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseCors("DevCors");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
