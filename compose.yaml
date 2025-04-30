@@ -4,3 +4,9 @@
     build:
       context: .
       dockerfile: RipperdocShop/Dockerfile
+  ripperdocshop.api:
+    image: ripperdocshop.api
+    build:
+      context: .
+      dockerfile: RipperdocShop.Api/Dockerfile
+
