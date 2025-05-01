@@ -35,6 +35,7 @@
 
     <ItemGroup>
       <Folder Include="Services\Customer\" />
+      <Folder Include="wwwroot\" />
     </ItemGroup>
 
     <ItemGroup>

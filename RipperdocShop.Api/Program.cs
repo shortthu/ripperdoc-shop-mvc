@@ -54,6 +54,7 @@ builder.Services.AddScoped<IProductCoreService, ProductCoreService>();
 builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 builder.Services.AddScoped<IProductRatingCoreService, ProductRatingCoreService>();
 builder.Services.AddScoped<IAdminProductRatingService, AdminProductRatingService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<JwtService>();
 
 builder.Services.AddControllers();
@@ -130,6 +131,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
