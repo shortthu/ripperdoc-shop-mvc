@@ -21,7 +21,8 @@ public class CategoriesController(
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false, [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
-        var (categories, totalCount, totalPages) = await categoryService.GetAllAsync(includeDeleted, page, pageSize);
+        var (categories, totalCount, totalPages) =
+            await categoryCoreService.GetAllAsync(includeDeleted, page, pageSize);
         var response = new CategoryResponse()
         {
             Categories = categories,

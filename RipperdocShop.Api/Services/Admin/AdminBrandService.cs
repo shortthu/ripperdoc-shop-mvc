@@ -11,24 +11,6 @@ public class AdminBrandService(
     IBrandCoreService brandCoreService)
     : IAdminBrandService
 {
-    public async Task<(IEnumerable<Brand> Brands, int TotalCount, int TotalPages)> GetAllAsync(bool includeDeleted,
-        int page, int pageSize)
-    {
-        var query = context.Brands
-            .Where(b => includeDeleted || b.DeletedAt == null);
-            
-        var totalCount = await query.CountAsync();
-        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-        
-        var brands = await query
-            .OrderByDescending(b => b.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-            
-        return (brands, totalCount, totalPages);
-    }
-
     public async Task<Brand> CreateAsync(BrandDto dto)
     {
         var brand = new Brand(dto.Name, dto.Description);

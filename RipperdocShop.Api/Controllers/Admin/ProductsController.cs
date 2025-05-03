@@ -15,14 +15,14 @@ namespace RipperdocShop.Api.Controllers.Admin;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 public class ProductsController(
     ApplicationDbContext context,
-    IAdminProductService productService, 
+    IAdminProductService productService,
     IProductCoreService productCoreService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false, 
+    public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (products, totalCount, totalPages) = await productService.GetAllAsync(includeDeleted, page, pageSize);
+        var (products, totalCount, totalPages) = await productCoreService.GetAllAsync(includeDeleted, page, pageSize);
         var response = new ProductResponse()
         {
             Products = products,
@@ -30,19 +30,20 @@ public class ProductsController(
             TotalPages = totalPages
         };
         return Ok(response);
-        
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var product = await productCoreService.GetByIdAsync(id);
-        return product == null ? NotFound(new ProblemDetails
-        {
-            Status = StatusCodes.Status404NotFound,
-            Title = "Product not found",
-            Detail = $"Product with ID {id} does not exist"
-        }) : Ok(product);
+        return product == null
+            ? NotFound(new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Product not found",
+                Detail = $"Product with ID {id} does not exist"
+            })
+            : Ok(product);
     }
 
     [HttpPost]
@@ -50,7 +51,7 @@ public class ProductsController(
     {
         var category = await context.Categories.FindAsync(dto.CategoryId);
         if (category == null) return BadRequest("Category not found");
-        
+
         Brand? brand = null;
         if (dto.BrandId != null)
         {
@@ -58,7 +59,7 @@ public class ProductsController(
             if (brand == null) return BadRequest("Brand not found");
         }
 
-        var product = await productService.CreateAsync(dto, category, brand);;
+        var product = await productService.CreateAsync(dto, category, brand);
 
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
@@ -99,7 +100,7 @@ public class ProductsController(
             });
         }
     }
-    
+
     [HttpPost("{id:guid}/feature")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -129,7 +130,7 @@ public class ProductsController(
             });
         }
     }
-    
+
     [HttpPost("{id:guid}/unfeature")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

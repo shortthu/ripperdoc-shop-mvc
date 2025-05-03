@@ -11,29 +11,8 @@ public class AdminProductService(
     IProductCoreService productCoreService)
     : IAdminProductService
 {
-    public async Task<(IEnumerable<Product> Products, int TotalCount, int TotalPages)> GetAllAsync(
-        bool includeDeleted, int page, int pageSize)
-    {
-        var query = context.Products
-            .Include(p => p.Category)
-            .Include(p => p.Brand)
-            .Where(p => includeDeleted || p.DeletedAt == null);
-            
-        var totalCount = await query.CountAsync();
-        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-        
-        var products = await query
-            .OrderByDescending(p => p.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-            
-        return (products, totalCount, totalPages);
-    }
-    
     public async Task<Product> CreateAsync(ProductDto dto, Category category, Brand? brand)
     {
-        
         var product = new Product(
             dto.Name,
             dto.Description,
@@ -42,8 +21,8 @@ public class AdminProductService(
             category,
             dto.IsFeatured,
             brand
-            );
-        
+        );
+
         context.Products.Add(product);
         await context.SaveChangesAsync();
         return product;
@@ -54,7 +33,7 @@ public class AdminProductService(
         var product = await productCoreService.GetByIdAsync(id);
         if (product == null)
             return null;
-        
+
         if (product.DeletedAt != null)
             throw new InvalidOperationException("Cannot update a deleted product. Restore it first, choom.");
 
@@ -66,33 +45,33 @@ public class AdminProductService(
             category,
             brand
         );
-        
+
         await context.SaveChangesAsync();
         return product;
     }
-    
+
     public async Task<Product?> SetFeaturedAsync(Guid id)
     {
         var product = await productCoreService.GetByIdAsync(id);
         if (product == null)
             return null;
-        
+
         product.SetFeatured();
         await context.SaveChangesAsync();
         return product;
     }
-    
+
     public async Task<Product?> RemoveFeaturedAsync(Guid id)
     {
         var product = await productCoreService.GetByIdAsync(id);
         if (product == null)
             return null;
-        
+
         product.RemoveFeatured();
         await context.SaveChangesAsync();
         return product;
     }
-    
+
     public async Task<Product?> SoftDeleteAsync(Guid id)
     {
         var product = await productCoreService.GetByIdAsync(id);
@@ -120,7 +99,7 @@ public class AdminProductService(
         var product = await context.Products
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(p => p.Id == id);
-    
+
         if (product == null)
             return null;
 

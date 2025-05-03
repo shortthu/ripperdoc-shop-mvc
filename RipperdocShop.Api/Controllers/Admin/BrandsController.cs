@@ -19,7 +19,7 @@ public class BrandsController(
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false, [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
-        var (brands, totalCount, totalPages) = await brandService.GetAllAsync(includeDeleted, page, pageSize);
+        var (brands, totalCount, totalPages) = await brandCoreService.GetAllAsync(includeDeleted, page, pageSize);
         var response = new BrandResponse()
         {
             Brands = brands,
