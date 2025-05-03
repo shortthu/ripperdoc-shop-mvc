@@ -5,7 +5,8 @@ namespace RipperdocShop.Api.Services.Admin;
 
 public interface IAdminCategoryService
 {
-    Task<IEnumerable<Category>> GetAllAsync(bool includeDeleted);
+    Task<(IEnumerable<Category> Categories, int TotalCount, int TotalPages)> GetAllAsync(
+        bool includeDeleted, int page, int pageSize);
     Task<Category> CreateAsync(CategoryDto dto);
     Task<Category?> UpdateAsync(Guid id, CategoryDto dto);
     Task<Category?> SoftDeleteAsync(Guid id);

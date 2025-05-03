@@ -11,13 +11,24 @@ public class AdminBrandService(
     IBrandCoreService brandCoreService)
     : IAdminBrandService
 {
-    public async Task<IEnumerable<Brand>> GetAllAsync(bool includeDeleted)
+    public async Task<(IEnumerable<Brand> Brands, int TotalCount, int TotalPages)> GetAllAsync(bool includeDeleted,
+        int page, int pageSize)
     {
-        return await context.Brands
-            .Where(b => includeDeleted || b.DeletedAt == null)
+        var query = context.Brands
+            .Where(b => includeDeleted || b.DeletedAt == null);
+            
+        var totalCount = await query.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        
+        var brands = await query
+            .OrderByDescending(b => b.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+            
+        return (brands, totalCount, totalPages);
     }
-    
+
     public async Task<Brand> CreateAsync(BrandDto dto)
     {
         var brand = new Brand(dto.Name, dto.Description);
@@ -31,7 +42,7 @@ public class AdminBrandService(
         var brand = await brandCoreService.GetByIdAsync(id);
         if (brand == null)
             return null;
-        
+
         if (brand.DeletedAt != null)
             throw new InvalidOperationException("Cannot update a deleted brand. Restore it first, choom.");
 
@@ -39,7 +50,7 @@ public class AdminBrandService(
         await context.SaveChangesAsync();
         return brand;
     }
-    
+
     public async Task<Brand?> SoftDeleteAsync(Guid id)
     {
         var brand = await brandCoreService.GetByIdAsync(id);
@@ -69,7 +80,7 @@ public class AdminBrandService(
         var brand = await context.Brands
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(p => p.Id == id);
-    
+
         if (brand == null)
             return null;
 

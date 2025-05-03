@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RipperdocShop.Api.Models.DTOs;
 using RipperdocShop.Shared.DTOs;
 using RipperdocShop.Api.Services.Admin;
 using RipperdocShop.Api.Services.Core;
@@ -17,12 +18,19 @@ public class CategoriesController(
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false)
+    public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false, [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var categories = await categoryService.GetAllAsync(includeDeleted);
-        return Ok(categories);
+        var (categories, totalCount, totalPages) = await categoryService.GetAllAsync(includeDeleted, page, pageSize);
+        var response = new CategoryResponse()
+        {
+            Categories = categories,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
+        return Ok(response);
     }
-    
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -43,14 +51,14 @@ public class CategoriesController(
             });
         }
     }
-    
+
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
         var category = await categoryCoreService.GetByIdAsync(id);
-        
+
         if (category == null)
             return NotFound(new ProblemDetails
             {
@@ -58,10 +66,10 @@ public class CategoriesController(
                 Title = "Category not found",
                 Detail = $"Category with ID {id} does not exist"
             });
-            
+
         return Ok(category);
     }
-    
+
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,7 +79,7 @@ public class CategoriesController(
         try
         {
             var category = await categoryService.UpdateAsync(id, dto);
-            
+
             if (category == null)
                 return NotFound(new ProblemDetails
                 {
@@ -79,7 +87,7 @@ public class CategoriesController(
                     Title = "Resource not found",
                     Detail = $"Category with ID {id} does not exist"
                 });
-                
+
             return NoContent();
         }
         catch (InvalidOperationException e)
@@ -102,7 +110,7 @@ public class CategoriesController(
         try
         {
             var category = await categoryService.SoftDeleteAsync(id);
-            
+
             if (category == null)
                 return NotFound(new ProblemDetails
                 {
@@ -110,7 +118,7 @@ public class CategoriesController(
                     Title = "Resource not found",
                     Detail = $"Category with ID {id} does not exist"
                 });
-                
+
             return NoContent();
         }
         catch (InvalidOperationException e)
@@ -133,7 +141,7 @@ public class CategoriesController(
         try
         {
             var category = await categoryService.RestoreAsync(id);
-            
+
             if (category == null)
                 return NotFound(new ProblemDetails
                 {
@@ -141,7 +149,7 @@ public class CategoriesController(
                     Title = "Resource not found",
                     Detail = $"Category with ID {id} does not exist"
                 });
-                
+
             return NoContent();
         }
         catch (InvalidOperationException e)
@@ -163,7 +171,7 @@ public class CategoriesController(
         try
         {
             var category = await categoryService.DeletePermanentlyAsync(id);
-            
+
             if (category == null)
                 return NotFound(new ProblemDetails
                 {
@@ -171,7 +179,7 @@ public class CategoriesController(
                     Title = "Resource not found",
                     Detail = $"Category with ID {id} does not exist"
                 });
-                
+
             return NoContent();
         }
         catch (InvalidOperationException e)

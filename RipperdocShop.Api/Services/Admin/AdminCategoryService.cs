@@ -11,13 +11,24 @@ public class AdminCategoryService(
     ICategoryCoreService categoryCoreService)
     : IAdminCategoryService
 {
-    public async Task<IEnumerable<Category>> GetAllAsync(bool includeDeleted)
+    public async Task<(IEnumerable<Category> Categories, int TotalCount, int TotalPages)> GetAllAsync(
+        bool includeDeleted, int page, int pageSize)
     {
-        return await context.Categories
-            .Where(c => includeDeleted || c.DeletedAt == null)
+        var query = context.Categories
+            .Where(c => includeDeleted || c.DeletedAt == null);
+            
+        var totalCount = await query.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        
+        var categories = await query
+            .OrderByDescending(c => c.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+            
+        return (categories, totalCount, totalPages);
     }
-    
+
     public async Task<Category> CreateAsync(CategoryDto dto)
     {
         var category = new Category(dto.Name, dto.Description);
@@ -31,7 +42,7 @@ public class AdminCategoryService(
         var category = await categoryCoreService.GetByIdAsync(id);
         if (category == null)
             return null;
-        
+
         if (category.DeletedAt != null)
             throw new InvalidOperationException("Cannot update a deleted category. Restore it first, choom.");
 
@@ -39,7 +50,7 @@ public class AdminCategoryService(
         await context.SaveChangesAsync();
         return category;
     }
-    
+
     public async Task<Category?> SoftDeleteAsync(Guid id)
     {
         var category = await categoryCoreService.GetByIdAsync(id);
@@ -67,7 +78,7 @@ public class AdminCategoryService(
         var category = await context.Categories
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(c => c.Id == id);
-    
+
         if (category == null)
             return null;
 

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RipperdocShop.Api.Models.DTOs;
 using RipperdocShop.Shared.DTOs;
 using RipperdocShop.Api.Services.Admin;
 using RipperdocShop.Api.Services.Core;
@@ -10,18 +11,24 @@ namespace RipperdocShop.Api.Controllers.Admin;
 [Route("api/admin/brands")]
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-
 public class BrandsController(
-    IAdminBrandService brandService, 
+    IAdminBrandService brandService,
     IBrandCoreService brandCoreService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false)
+    public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false, [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var brands = await brandService.GetAllAsync(includeDeleted);
-        return Ok(brands);
+        var (brands, totalCount, totalPages) = await brandService.GetAllAsync(includeDeleted, page, pageSize);
+        var response = new BrandResponse()
+        {
+            Brands = brands,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
+        return Ok(response);
     }
-    
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -42,19 +49,21 @@ public class BrandsController(
             });
         }
     }
-    
+
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var brand = await brandCoreService.GetByIdAsync(id);
-        return brand == null ? NotFound(new ProblemDetails
-        {
-            Status = StatusCodes.Status404NotFound,
-            Title = "Brand not found",
-            Detail = $"Brand with ID {id} does not exist"
-        }) : Ok(brand);
+        return brand == null
+            ? NotFound(new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Brand not found",
+                Detail = $"Brand with ID {id} does not exist"
+            })
+            : Ok(brand);
     }
-    
+
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
