@@ -26,7 +26,7 @@ public class Product : ITimestampedEntity, ISoftDeletable
     [Range(0.0, double.MaxValue)]
     public decimal Price { get; private set; }
     
-    public bool IsFeatured { get; private set; }
+    public bool IsFeatured { get; private set; } = false;
     
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }

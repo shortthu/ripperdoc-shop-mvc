@@ -18,8 +18,8 @@ public class ProductDto
     
     [Range(0.0, double.MaxValue)]
     public decimal Price { get; set; }
-    
-    public bool IsFeatured { get; set; }
+
+    public bool IsFeatured { get; set; } = false;
 
     [Required]
     public Guid CategoryId { get; set; }
