@@ -54,6 +54,7 @@ builder.Services.AddScoped<IProductCoreService, ProductCoreService>();
 builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 builder.Services.AddScoped<IProductRatingCoreService, ProductRatingCoreService>();
 builder.Services.AddScoped<IAdminProductRatingService, AdminProductRatingService>();
+builder.Services.AddScoped<IUserListService, UserListService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<JwtService>();
 

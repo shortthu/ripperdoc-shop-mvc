@@ -1,0 +1,27 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RipperdocShop.Api.Models.DTOs;
+using RipperdocShop.Api.Services.Admin;
+
+namespace RipperdocShop.Api.Controllers.Admin;
+
+[Route("api/admin/users")]
+[ApiController]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+public class UsersListController(IUserListService userListService) : ControllerBase
+{
+    [HttpGet]
+    public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false, [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var (users, totalCount, totalPages) = await userListService.GetAllAsync(includeDeleted, page, pageSize);
+        var response = new UserListResponse()
+        {
+            Users = users,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
+        return Ok(response);
+    }
+}
