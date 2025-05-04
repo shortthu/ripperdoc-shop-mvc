@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using RipperdocShop.Data;
+using RipperdocShop.Api.Data;
 
 #nullable disable
 
-namespace RipperdocShop.Migrations
+namespace RipperdocShop.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250416065900_FeaturedProductCheck")]
-    partial class FeaturedProductCheck
+    [Migration("20250416024312_EnforceSomeRules")]
+    partial class EnforceSomeRules
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -458,10 +458,6 @@ namespace RipperdocShop.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("image_url");
-
-                    b.Property<bool>("IsFeatured")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_featured");
 
                     b.Property<string>("Name")
                         .IsRequired()

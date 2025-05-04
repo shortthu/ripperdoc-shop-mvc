@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using RipperdocShop.Data;
+using RipperdocShop.Api.Data;
 
 #nullable disable
 
-namespace RipperdocShop.Migrations
+namespace RipperdocShop.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -21,38 +21,6 @@ namespace RipperdocShop.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text")
-                        .HasColumnName("concurrency_stamp");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("normalized_name");
-
-                    b.HasKey("Id")
-                        .HasName("pk_roles");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
-
-                    b.ToTable("roles", (string)null);
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
@@ -117,13 +85,11 @@ namespace RipperdocShop.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("text")
                         .HasColumnName("login_provider");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("text")
                         .HasColumnName("provider_key");
 
                     b.Property<string>("ProviderDisplayName")
@@ -143,25 +109,6 @@ namespace RipperdocShop.Migrations
                     b.ToTable("user_logins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("role_id");
-
-                    b.HasKey("UserId", "RoleId")
-                        .HasName("pk_user_roles");
-
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_user_roles_role_id");
-
-                    b.ToTable("user_roles", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -169,13 +116,11 @@ namespace RipperdocShop.Migrations
                         .HasColumnName("user_id");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("text")
                         .HasColumnName("login_provider");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("text")
                         .HasColumnName("name");
 
                     b.Property<string>("Value")
@@ -188,7 +133,7 @@ namespace RipperdocShop.Migrations
                     b.ToTable("user_tokens", (string)null);
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Entities.Brand", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Entities.Brand", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -205,20 +150,20 @@ namespace RipperdocShop.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
                         .HasColumnName("description");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
                         .HasColumnName("slug");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -235,7 +180,7 @@ namespace RipperdocShop.Migrations
                     b.ToTable("brands", (string)null);
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Entities.CartItem", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Entities.CartItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -271,7 +216,7 @@ namespace RipperdocShop.Migrations
                     b.ToTable("cart_items", (string)null);
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Entities.Category", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Entities.Category", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -288,20 +233,20 @@ namespace RipperdocShop.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
                         .HasColumnName("description");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
                         .HasColumnName("slug");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -318,7 +263,7 @@ namespace RipperdocShop.Migrations
                     b.ToTable("categories", (string)null);
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Entities.Order", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Entities.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -354,7 +299,7 @@ namespace RipperdocShop.Migrations
                     b.ToTable("orders", (string)null);
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Entities.OrderItem", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Entities.OrderItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -422,7 +367,7 @@ namespace RipperdocShop.Migrations
                     b.ToTable("order_items", (string)null);
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Entities.Product", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Entities.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -447,8 +392,8 @@ namespace RipperdocShop.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
                         .HasColumnName("description");
 
                     b.Property<string>("ImageUrl")
@@ -462,18 +407,18 @@ namespace RipperdocShop.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("numeric")
+                        .HasColumnType("decimal(18,2)")
                         .HasColumnName("price");
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
                         .HasColumnName("slug");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -496,7 +441,7 @@ namespace RipperdocShop.Migrations
                     b.ToTable("products", (string)null);
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Entities.ProductRating", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Entities.ProductRating", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -504,8 +449,8 @@ namespace RipperdocShop.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Comment")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(3000)
+                        .HasColumnType("character varying(3000)")
                         .HasColumnName("comment");
 
                     b.Property<DateTime>("CreatedAt")
@@ -544,7 +489,39 @@ namespace RipperdocShop.Migrations
                     b.ToTable("product_ratings", (string)null);
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Identities.AppUser", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Identities.AppRole", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text")
+                        .HasColumnName("concurrency_stamp");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("normalized_name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_roles");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("roles", (string)null);
+                });
+
+            modelBuilder.Entity("RipperdocShop.Api.Models.Identities.AppUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -643,9 +620,28 @@ namespace RipperdocShop.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("RipperdocShop.Api.Models.Identities.AppUserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("role_id");
+
+                    b.HasKey("UserId", "RoleId")
+                        .HasName("pk_user_roles");
+
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("ix_user_roles_role_id");
+
+                    b.ToTable("user_roles", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                    b.HasOne("RipperdocShop.Api.Models.Identities.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -655,7 +651,7 @@ namespace RipperdocShop.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("RipperdocShop.Models.Identities.AppUser", null)
+                    b.HasOne("RipperdocShop.Api.Models.Identities.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -665,7 +661,7 @@ namespace RipperdocShop.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("RipperdocShop.Models.Identities.AppUser", null)
+                    b.HasOne("RipperdocShop.Api.Models.Identities.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -673,26 +669,9 @@ namespace RipperdocShop.Migrations
                         .HasConstraintName("fk_user_logins_users_user_id");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_roles_roles_role_id");
-
-                    b.HasOne("RipperdocShop.Models.Identities.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_roles_users_user_id");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("RipperdocShop.Models.Identities.AppUser", null)
+                    b.HasOne("RipperdocShop.Api.Models.Identities.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -700,16 +679,16 @@ namespace RipperdocShop.Migrations
                         .HasConstraintName("fk_user_tokens_users_user_id");
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Entities.CartItem", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Entities.CartItem", b =>
                 {
-                    b.HasOne("RipperdocShop.Models.Entities.Product", "Product")
+                    b.HasOne("RipperdocShop.Api.Models.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_cart_items_products_product_id");
 
-                    b.HasOne("RipperdocShop.Models.Identities.AppUser", "User")
+                    b.HasOne("RipperdocShop.Api.Models.Identities.AppUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -721,9 +700,9 @@ namespace RipperdocShop.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Entities.Order", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Entities.Order", b =>
                 {
-                    b.HasOne("RipperdocShop.Models.Identities.AppUser", "User")
+                    b.HasOne("RipperdocShop.Api.Models.Identities.AppUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -733,16 +712,16 @@ namespace RipperdocShop.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Entities.OrderItem", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Entities.OrderItem", b =>
                 {
-                    b.HasOne("RipperdocShop.Models.Entities.Order", "Order")
+                    b.HasOne("RipperdocShop.Api.Models.Entities.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_order_items_orders_order_id");
 
-                    b.HasOne("RipperdocShop.Models.Entities.Product", "Product")
+                    b.HasOne("RipperdocShop.Api.Models.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -754,15 +733,15 @@ namespace RipperdocShop.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Entities.Product", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Entities.Product", b =>
                 {
-                    b.HasOne("RipperdocShop.Models.Entities.Brand", "Brand")
+                    b.HasOne("RipperdocShop.Api.Models.Entities.Brand", "Brand")
                         .WithMany()
                         .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("fk_products_brands_brand_id");
 
-                    b.HasOne("RipperdocShop.Models.Entities.Category", "Category")
+                    b.HasOne("RipperdocShop.Api.Models.Entities.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -774,16 +753,16 @@ namespace RipperdocShop.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("RipperdocShop.Models.Entities.ProductRating", b =>
+            modelBuilder.Entity("RipperdocShop.Api.Models.Entities.ProductRating", b =>
                 {
-                    b.HasOne("RipperdocShop.Models.Entities.Product", "Product")
+                    b.HasOne("RipperdocShop.Api.Models.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_product_ratings_products_product_id");
 
-                    b.HasOne("RipperdocShop.Models.Identities.AppUser", "User")
+                    b.HasOne("RipperdocShop.Api.Models.Identities.AppUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -793,6 +772,37 @@ namespace RipperdocShop.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RipperdocShop.Api.Models.Identities.AppUserRole", b =>
+                {
+                    b.HasOne("RipperdocShop.Api.Models.Identities.AppRole", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_roles_roles_role_id");
+
+                    b.HasOne("RipperdocShop.Api.Models.Identities.AppUser", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_roles_users_user_id");
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RipperdocShop.Api.Models.Identities.AppRole", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("RipperdocShop.Api.Models.Identities.AppUser", b =>
+                {
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

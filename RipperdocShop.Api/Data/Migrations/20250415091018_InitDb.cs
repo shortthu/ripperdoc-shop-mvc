@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace RipperdocShop.Migrations
+namespace RipperdocShop.Api.Migrations
 {
     /// <inheritdoc />
     public partial class InitDb : Migration

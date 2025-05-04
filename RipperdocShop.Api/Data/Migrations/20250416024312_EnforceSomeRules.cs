@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace RipperdocShop.Migrations
+namespace RipperdocShop.Api.Migrations
 {
     /// <inheritdoc />
     public partial class EnforceSomeRules : Migration

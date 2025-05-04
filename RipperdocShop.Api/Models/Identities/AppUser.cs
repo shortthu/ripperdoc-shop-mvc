@@ -9,6 +9,7 @@ public sealed class AppUser : IdentityUser<Guid>, ITimestampedEntity, ISoftDelet
     public DateTime UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
     public bool IsDisabled { get; private set; }
+    public ICollection<AppUserRole> UserRoles { get; set; } = new List<AppUserRole>();
 
     // Warning: EF Core will use this too.
     public AppUser()

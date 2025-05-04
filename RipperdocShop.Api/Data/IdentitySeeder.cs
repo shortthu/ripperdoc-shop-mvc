@@ -9,7 +9,7 @@ public static class IdentitySeeder
     {
         using var scope = services.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AppRole>>();
         
         // Seed Roles
         
@@ -19,7 +19,7 @@ public static class IdentitySeeder
         {
             if (!await roleManager.RoleExistsAsync(roleName))
             {
-                await roleManager.CreateAsync(new IdentityRole<Guid>
+                await roleManager.CreateAsync(new AppRole()
                 {
                     Name = roleName,
                     NormalizedName = roleName.ToUpper(),

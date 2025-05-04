@@ -10,7 +10,9 @@ namespace RipperdocShop.Api.Data;
 public class ApplicationDbContext(
     DbContextOptions<ApplicationDbContext> options,
     TimestampInterceptor timestampInterceptor)
-    : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>(options)
+    : IdentityDbContext<AppUser, AppRole, Guid, 
+        IdentityUserClaim<Guid>, AppUserRole, IdentityUserLogin<Guid>, 
+        IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>(options)
 {
     public DbSet<Category> Categories { get; set; }
     public DbSet<Brand> Brands { get; set; }
@@ -32,8 +34,19 @@ public class ApplicationDbContext(
 
         // Rename auto-generated identity tables
         builder.Entity<AppUser>().ToTable("users");
-        builder.Entity<IdentityRole<Guid>>().ToTable("roles");
-        builder.Entity<IdentityUserRole<Guid>>().ToTable("user_roles");
+        builder.Entity<AppRole>().ToTable("roles");
+        builder.Entity<AppUserRole>()
+            .ToTable("user_roles")
+            .HasKey(ur => new { ur.UserId, ur.RoleId });
+        builder.Entity<AppUserRole>()
+            .HasOne(ur => ur.User)
+            .WithMany(u => u.UserRoles)
+            .HasForeignKey(ur => ur.UserId);
+
+        builder.Entity<AppUserRole>()
+            .HasOne(ur => ur.Role)
+            .WithMany(r => r.UserRoles)
+            .HasForeignKey(ur => ur.RoleId);
         builder.Entity<IdentityUserClaim<Guid>>().ToTable("user_claims");
         builder.Entity<IdentityUserLogin<Guid>>().ToTable("user_logins");
         builder.Entity<IdentityRoleClaim<Guid>>().ToTable("role_claims");
