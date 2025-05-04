@@ -22,7 +22,11 @@ public class UserListService(ApplicationDbContext context) : IUserListService
                 CreatedAt = u.CreatedAt,
                 UpdatedAt = u.UpdatedAt,
                 DeletedAt = u.DeletedAt,
-                IsDisabled = u.IsDisabled
+                IsDisabled = u.IsDisabled,
+                Roles = (from ur in context.UserRoles
+                    join r in context.Roles on ur.RoleId equals r.Id
+                    where ur.UserId == u.Id
+                    select r.Name).ToList()
             });
 
         var totalCount = await query.CountAsync();
