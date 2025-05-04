@@ -13,5 +13,5 @@ public class UserDto
     public DateTime? DeletedAt { get; set; }
     public bool IsDisabled { get; set; }
     
-    public List<string> Roles { get; set; } = [];
+    public List<string?> Roles { get; set; } = [];
 }

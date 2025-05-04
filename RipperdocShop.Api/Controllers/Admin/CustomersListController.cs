@@ -6,19 +6,19 @@ using RipperdocShop.Api.Services.Admin;
 
 namespace RipperdocShop.Api.Controllers.Admin;
 
-[Route("api/admin/users")]
+[Route("api/admin/customers")]
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-public class UsersListController(IUserListService userListService) : ControllerBase
+public class CustomersListController(ICustomerListService customerListService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false, [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
-        var (users, totalCount, totalPages) = await userListService.GetAllAsync(includeDeleted, page, pageSize);
-        var response = new UserListResponse()
+        var (customers, totalCount, totalPages) = await customerListService.GetAllAsync(includeDeleted, page, pageSize);
+        var response = new CustomerListResponse()
         {
-            Users = users,
+            Customers = customers,
             TotalCount = totalCount,
             TotalPages = totalPages
         };

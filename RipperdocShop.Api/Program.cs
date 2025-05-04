@@ -28,7 +28,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddSingleton<TimestampInterceptor>();
 
 // ASP.NET Identity services
-builder.Services.AddIdentity<AppUser, IdentityRole<Guid>>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddIdentity<AppUser, AppRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -54,7 +54,7 @@ builder.Services.AddScoped<IProductCoreService, ProductCoreService>();
 builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 builder.Services.AddScoped<IProductRatingCoreService, ProductRatingCoreService>();
 builder.Services.AddScoped<IAdminProductRatingService, AdminProductRatingService>();
-builder.Services.AddScoped<IUserListService, UserListService>();
+builder.Services.AddScoped<ICustomerListService, CustomerListService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<JwtService>();
 
