@@ -18,6 +18,14 @@ public class ProductCoreService(ApplicationDbContext context) : IProductCoreServ
             .Include(p => p.Brand)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
+    
+    public async Task<Product?> GetBySlugWithDetailsAsync(string slug)
+    {
+        return await context.Products
+            .Include(p => p.Category)
+            .Include(p => p.Brand)
+            .FirstOrDefaultAsync(p => p.Slug == slug);
+    }
 
     public async Task<(IEnumerable<Product> Products, int TotalCount, int TotalPages)> GetAllAsync(
         bool includeDeleted, int page, int pageSize)
@@ -44,5 +52,13 @@ public class ProductCoreService(ApplicationDbContext context) : IProductCoreServ
             .ToListAsync();
 
         return (products, totalCount, totalPages);
+    }
+
+    public async Task<IEnumerable<Product>> GetFeaturedAsync()
+    {
+        var query = context.Products
+            .Where(p => (p.IsFeatured && p.DeletedAt == null));
+        
+        return await query.ToListAsync();
     }
 }

@@ -13,4 +13,18 @@ public class CustomerProductService(IProductCoreService productCoreService, IMap
         var productDto = mapper.Map<IEnumerable<ProductResponseDto>>(products);
         return (productDto, totalCount, totalPages);
     }
+    
+    public async Task<ProductResponseDto?> GetBySlugAsync(string slug)
+    {
+        var product = await productCoreService.GetBySlugWithDetailsAsync(slug);
+        var productDto = mapper.Map<ProductResponseDto>(product);
+        return productDto;
+    }
+
+    public async Task<IEnumerable<ProductResponseDto>> GetFeaturedProductsAsync()
+    {
+        var products = await productCoreService.GetFeaturedAsync();
+        var productDto = mapper.Map<IEnumerable<ProductResponseDto>>(products);
+        return productDto;
+    }
 }

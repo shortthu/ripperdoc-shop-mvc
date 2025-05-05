@@ -6,7 +6,10 @@ public interface IProductCoreService
 {
     Task<Product?> GetByIdAsync(Guid id);
     Task<Product?> GetByIdWithDetailsAsync(Guid id);
+    Task<Product?> GetBySlugWithDetailsAsync(string slug);
 
     Task<(IEnumerable<Product> Products, int TotalCount, int TotalPages)> GetAllAsync(
         bool includeDeleted, int page, int pageSize);
+
+    Task<IEnumerable<Product>> GetFeaturedAsync();
 }
