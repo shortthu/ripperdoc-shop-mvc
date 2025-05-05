@@ -1,12 +1,13 @@
 ﻿services:
-  ripperdocshop:
-    image: ripperdocshop
-    build:
-      context: .
-      dockerfile: RipperdocShop/Dockerfile
   ripperdocshop.api:
     image: ripperdocshop.api
     build:
       context: .
       dockerfile: RipperdocShop.Api/Dockerfile
 
+  ripperdocshop.web:
+    image: ripperdocshop.web
+    build:
+      context: .
+      dockerfile: RipperdocShop.Web/Dockerfile
+      

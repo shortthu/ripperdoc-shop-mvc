@@ -34,6 +34,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Mapping\" />
       <Folder Include="Services\Customer\" />
       <Folder Include="wwwroot\" />
     </ItemGroup>
