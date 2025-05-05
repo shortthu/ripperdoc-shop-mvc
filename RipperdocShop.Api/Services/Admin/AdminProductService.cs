@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RipperdocShop.Api.Data;
 using RipperdocShop.Shared.DTOs;

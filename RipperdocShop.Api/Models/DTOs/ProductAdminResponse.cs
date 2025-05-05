@@ -1,10 +1,11 @@
 using RipperdocShop.Api.Models.Entities;
+using RipperdocShop.Shared.DTOs;
 
 namespace RipperdocShop.Api.Models.DTOs;
 
-public class CategoryResponse
+public class ProductAdminResponse
 {
-    public IEnumerable<Category> Categories { get; init; } = null!;
+    public IEnumerable<Product> Products { get; init; } = null!;
     public int TotalCount { get; init; }
     public int TotalPages { get; init; }
 }

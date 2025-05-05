@@ -6,10 +6,12 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RipperdocShop.Api.Data;
 using RipperdocShop.Api.Interceptors;
+using RipperdocShop.Api.Mapping;
 using RipperdocShop.Api.Models.Identities;
 using RipperdocShop.Api.Services;
 using RipperdocShop.Api.Services.Admin;
 using RipperdocShop.Api.Services.Core;
+using RipperdocShop.Api.Services.Customer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,7 @@ builder.Services.AddIdentity<AppUser, AppRole>(options => options.SignIn.Require
 
 // AutoMapper services
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 // Cookie configurations
 if (builder.Environment.IsDevelopment())
@@ -57,6 +60,10 @@ builder.Services.AddScoped<IAdminProductRatingService, AdminProductRatingService
 builder.Services.AddScoped<ICustomerListService, CustomerListService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<JwtService>();
+
+builder.Services.AddScoped<ICustomerProductService, CustomerProductService>();
+builder.Services.AddScoped<ICustomerCategoryService, CustomerCategoryService>();
+builder.Services.AddScoped<ICustomerBrandService, CustomerBrandService>();
 
 builder.Services.AddControllers();
 

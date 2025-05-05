@@ -44,8 +44,8 @@ public class AuthController(
             return Unauthorized("Wrong creds, choom");
 
         var roles = await userManager.GetRolesAsync(user);
-        if (!roles.Contains("Admin"))
-            return Unauthorized("Looking at the wrong place, choom");
+        // if (!roles.Contains("Admin"))
+        //     return Unauthorized("Looking at the wrong place, choom");
         
         var token = jwt.GenerateToken(user, roles);
         
