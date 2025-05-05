@@ -25,7 +25,14 @@ public class ProductCoreService(ApplicationDbContext context) : IProductCoreServ
         var query = context.Products
             .Include(p => p.Category)
             .Include(p => p.Brand)
-            .Where(p => includeDeleted || p.DeletedAt == null);
+            .Where(p =>
+                // Product must not be soft-deleted (unless includeDeleted)
+                (includeDeleted || p.DeletedAt == null) &&
+                // Category must not be soft-deleted (unless includeDeleted)
+                (includeDeleted || p.Category.DeletedAt == null) &&
+                // Brand: if present, must not be soft-deleted (unless includeDeleted)
+                (p.Brand == null || includeDeleted || p.Brand.DeletedAt == null)
+            );
 
         var totalCount = await query.CountAsync();
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
