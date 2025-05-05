@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    
+    "watch": "npx @tailwindcss/cli -i ./wwwroot/css/site.css -o ./wwwroot/css/output.css --watch"
   },
   "type": "module",
   "author": "",
@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@tailwindcss/cli": "^4.1.4",
+    "flowbite": "^3.1.2",
     "tailwindcss": "^4.1.4"
   }
 }
