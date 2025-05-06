@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RipperdocShop.Api.Models.Entities;
 using RipperdocShop.Api.Services.Core;
 using RipperdocShop.Api.Services.Customer;
 using RipperdocShop.Shared.DTOs;
@@ -22,7 +23,7 @@ public class ProductRatingController(
         try
         {
             var rating = await productRatingService.CreateAsync(createDto);
-            return CreatedAtAction(nameof(GetById), new { id = rating.Id }, rating);
+            return CreatedAtAction(nameof(GetById), new { id = rating?.Id }, rating);
         }
         catch (Exception e)
         {

@@ -12,10 +12,14 @@ public class CustomerProductRatingService(
     ApplicationDbContext context)
     : ICustomerProductRatingService
 {
-    public async Task<ProductRating> CreateAsync(ProductRatingDto createDto)
+    public async Task<ProductRating?> CreateAsync(ProductRatingDto createDto)
     {
         var product = await productCoreService.GetBySlugWithDetailsAsync(createDto.ProductSlug);
+        if (product is not { DeletedAt: null }) return null;
+        
         var user = await userService.GetByIdAsync(createDto.CustomerId);
+        if (user is not { DeletedAt: null }) return null;
+        
         var rating = new ProductRating(createDto.Score, createDto.Comment, product, user);
         context.ProductRatings.Add(rating);
         await context.SaveChangesAsync();
@@ -32,7 +36,10 @@ public class CustomerProductRatingService(
             throw new InvalidOperationException("Cannot update a deleted rating.");
         
         var product = await productCoreService.GetBySlugWithDetailsAsync(createDto.ProductSlug);
+        if (product is not { DeletedAt: null }) return null;
+        
         var user = await userService.GetByIdAsync(createDto.CustomerId);
+        if (user is not { DeletedAt: null }) return null;
 
         rating.UpdateDetails(createDto.Score, createDto.Comment, product, user);
         await context.SaveChangesAsync();
