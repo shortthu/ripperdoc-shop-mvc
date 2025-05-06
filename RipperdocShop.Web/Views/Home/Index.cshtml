@@ -1,8 +1,33 @@
 ﻿@{
   ViewData["Title"] = "Home Page";
 }
+@model RipperdocShop.Web.Models.ViewModels.HomeViewModel
 
 <div class="text-center">
   <h1 class="display-4">Welcome</h1>
   <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<section class="mt-4">
+  <h2 class="text-xl font-semibold">Categories</h2>
+  <ul class="flex gap-4">
+    @foreach (var cat in Model.Categories.Categories)
+    {
+      <li><a class="text-blue-500 underline" href="/Categories/@cat.Slug">@cat.Name</a></li>
+    }
+  </ul>
+</section>
+
+<section class="mt-6">
+  <h2 class="text-xl font-semibold">Featured Products</h2>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    @foreach (var prod in Model.FeaturedProducts!)
+    {
+      <div class="border p-4 rounded">
+        <h3 class="font-bold">@prod.Name</h3>
+        <p class="text-sm text-gray-600">$@prod.Price</p>
+        <a href="/Products/Details/@prod.Slug" class="text-blue-500 underline">View</a>
+      </div>
+    }
+  </div>
+</section>

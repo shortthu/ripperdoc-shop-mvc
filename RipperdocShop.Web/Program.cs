@@ -9,7 +9,9 @@ builder.Services.AddHttpClient("CustomerApi", client =>
     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 });
 
-builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductService, ProductService>()
+    .AddScoped<ICategoryService, CategoryService>()
+    .AddScoped<IBrandService, BrandService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

@@ -17,13 +17,7 @@ public class ProductsController(
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (products, totalCount, totalPages) = await productService.GetAllAsync(includeDeleted, page, pageSize);
-        var response = new ProductResponseDto()
-        {
-            Products = products,
-            TotalCount = totalCount,
-            TotalPages = totalPages
-        };
+        var response = await productService.GetAllAsync(includeDeleted, page, pageSize);
         return Ok(response);
     }
 
@@ -45,29 +39,16 @@ public class ProductsController(
     public async Task<IActionResult> GetByCategorySlug(string slug, [FromQuery] bool includeDeleted = false,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (products, totalCount, totalPages) =
-            await productService.GetByCategorySlugAsync(slug, includeDeleted, page, pageSize);
-        var response = new ProductResponseDto()
-        {
-            Products = products,
-            TotalCount = totalCount,
-            TotalPages = totalPages
-        };
+        var response = await productService.GetByCategorySlugAsync(slug, includeDeleted, page, pageSize);
         return Ok(response);
     }
-    
+
     [HttpGet("brand/slug")]
     public async Task<IActionResult> GetByBrandSlug(string slug, [FromQuery] bool includeDeleted = false,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (products, totalCount, totalPages) =
-            await productService.GetByBrandSlugAsync(slug, includeDeleted, page, pageSize);
-        var response = new ProductResponseDto()
-        {
-            Products = products,
-            TotalCount = totalCount,
-            TotalPages = totalPages
-        };
+        var response = await productService.GetByBrandSlugAsync(slug, includeDeleted, page, pageSize);
+
         return Ok(response);
     }
 

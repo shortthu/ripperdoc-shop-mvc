@@ -5,17 +5,17 @@ namespace RipperdocShop.Web.Services;
 public class ProductService(IHttpClientFactory factory) : BaseApiService(factory), IProductService
 {
     public Task<ProductDto?> GetBySlugAsync(string slug) =>
-        GetAsync<ProductDto>($"products/slug/{slug}");
-    
-    public Task<(List<ProductDto> Products, int TotalCount, int TotalPages)> GetAllAsync() =>
-        GetAsync<(List<ProductDto> Products, int TotalCount, int TotalPages)>($"products/");
+        GetAsync<ProductDto>($"/api/products/slug/{slug}");
 
-    public Task<(List<ProductDto> Products, int TotalCount, int TotalPages)> GetByCategorySlugAsync(string slug) =>
-        GetAsync<(List<ProductDto> Products, int TotalCount, int TotalPages)>($"products/category/{slug}");
+    public Task<ProductResponseDto?> GetAllAsync() =>
+        GetAsync<ProductResponseDto?>($"/api/products/");
 
-    public Task<(List<ProductDto> Products, int TotalCount, int TotalPages)> GetByBrandSlugAsync(string slug) =>
-        GetAsync<(List<ProductDto> Products, int TotalCount, int TotalPages)>($"products/brand/{slug}");
+    public Task<ProductResponseDto?> GetByCategorySlugAsync(string slug) =>
+        GetAsync<ProductResponseDto?>($"/api/products/category/{slug}");
 
-    public Task<List<ProductDto>?> GetFeatured() =>
-        GetAsync<List<ProductDto>>($"products/featured");
+    public Task<ProductResponseDto?> GetByBrandSlugAsync(string slug) =>
+        GetAsync<ProductResponseDto?>($"/api/products/brand/{slug}");
+
+    public Task<List<ProductDto>?> GetFeaturedAsync() =>
+        GetAsync<List<ProductDto>>($"/api/products/featured");
 }
