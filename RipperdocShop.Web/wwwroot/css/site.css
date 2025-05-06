@@ -2,3 +2,5 @@
 @import "flowbite/src/themes/default.css";
 @source "../../node_modules/flowbite";
 @plugin "flowbite/plugin";
+
+@custom-variant dark (&:where(.dark, .dark *));

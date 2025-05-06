@@ -16,10 +16,7 @@ public class HomeController(
     public async Task<IActionResult> Index()
     {
         var categories = await categoryService.GetAllAsync();
-        _logger.LogInformation("Successfully retrieved categories", categories);
-        
         var featured = await productService.GetFeaturedAsync();
-        _logger.LogInformation("Successfully retrieved {Count} featured products", featured.Count);
         
         var vm = new HomeViewModel
         {
@@ -28,11 +25,6 @@ public class HomeController(
         };
         
         return View(vm);
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

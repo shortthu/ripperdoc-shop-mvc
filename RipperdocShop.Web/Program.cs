@@ -11,7 +11,8 @@ builder.Services.AddHttpClient("CustomerApi", client =>
 
 builder.Services.AddScoped<IProductService, ProductService>()
     .AddScoped<ICategoryService, CategoryService>()
-    .AddScoped<IBrandService, BrandService>();
+    .AddScoped<IBrandService, BrandService>()
+    .AddScoped<IProductRatingService, ProductRatingService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

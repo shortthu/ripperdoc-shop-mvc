@@ -1,0 +1,30 @@
+@model RipperdocShop.Web.Models.ViewModels.ProductDetailsViewModel
+
+<section class="max-w-screen-xl mx-auto py-8 px-4">
+  <div class="grid md:grid-cols-2 gap-10">
+    <div>
+      <img src="@Model.Product.ImageUrl" class="rounded w-full h-auto" alt="@Model.Product.Name" />
+    </div>
+    <div>
+      <h1 class="text-3xl font-bold mb-2">@Model.Product.Name</h1>
+      <p class="text-lg text-gray-600 mb-4">$@Model.Product.Price</p>
+      <p class="mb-6">@Model.Product.Description</p>
+
+      <div>
+        <h3 class="text-xl font-semibold mb-2">Rating</h3>
+        @foreach (var rating in Model.Ratings)
+        {
+          <div class="flex items-center">
+            <span class="text-yellow-400 mr-2">
+              @for (var i = 0; i < rating.Score; i++)
+              {
+                <i class="fa fa-star"></i>
+              }
+            </span>
+            <span>@rating.Score/5</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</section>

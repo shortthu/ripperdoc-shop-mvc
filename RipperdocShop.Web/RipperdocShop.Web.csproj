@@ -15,11 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Views\Categories\" />
-      <Folder Include="Views\Products\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\RipperdocShop.Shared\RipperdocShop.Shared.csproj" />
     </ItemGroup>
 
