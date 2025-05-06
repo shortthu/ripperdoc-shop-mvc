@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace RipperdocShop.Web.ViewModels;
+namespace RipperdocShop.Web.Models.ViewModels;
 
 public class ProductRatingUpdateViewModel
 {
