@@ -23,7 +23,7 @@ public class ProductsController(
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var (products, totalCount, totalPages) = await productCoreService.GetAllAsync(includeDeleted, page, pageSize);
-        var response = new ProductAdminResponse()
+        var response = new AdminProductResponse()
         {
             Products = products,
             TotalCount = totalCount,

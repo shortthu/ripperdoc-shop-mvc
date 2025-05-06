@@ -1,11 +1,11 @@
-using RipperdocShop.Api.Models.Entities;
+using RipperdocShop.Api.Models.Identities;
 using RipperdocShop.Shared.DTOs;
 
 namespace RipperdocShop.Api.Models.DTOs;
 
-public class ProductAdminResponse
+public class AdminCustomerListResponse
 {
-    public IEnumerable<Product> Products { get; init; } = null!;
+    public IEnumerable<UserDto> Customers { get; init; } = null!;
     public int TotalCount { get; init; }
     public int TotalPages { get; init; }
 }

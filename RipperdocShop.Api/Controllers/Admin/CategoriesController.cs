@@ -23,7 +23,7 @@ public class CategoriesController(
     {
         var (categories, totalCount, totalPages) =
             await categoryCoreService.GetAllAsync(includeDeleted, page, pageSize);
-        var response = new CategoryAdminResponse()
+        var response = new AdminCategoryResponse()
         {
             Categories = categories,
             TotalCount = totalCount,

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RipperdocShop.Api.Services.Core;
 
-namespace RipperdocShop.Api.Controllers;
+namespace RipperdocShop.Api.Controllers.Admin;
 
 [Route("api/admin/images")]
 [ApiController]

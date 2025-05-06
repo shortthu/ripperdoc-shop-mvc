@@ -24,7 +24,7 @@ public class ProductRatingsController(
         var (ratings, totalCount, totalPages) =
             await productRatingCoreService.GetByProductAsync(productId, includeDeleted, page, pageSize);
 
-        var response = new ProductRatingResponse()
+        var response = new AdminProductRatingResponse()
         {
             Ratings = ratings,
             TotalCount = totalCount,
@@ -45,7 +45,7 @@ public class ProductRatingsController(
         var (ratings, totalCount, totalPages) =
             await productRatingCoreService.GetByUserAsync(userId, includeDeleted, page, pageSize);
 
-        var response = new ProductRatingResponse()
+        var response = new AdminProductRatingResponse()
         {
             Ratings = ratings,
             TotalCount = totalCount,

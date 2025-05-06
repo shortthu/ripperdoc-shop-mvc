@@ -5,7 +5,7 @@ using RipperdocShop.Shared.DTOs;
 
 namespace RipperdocShop.Api.Services.Admin;
 
-public class CustomerListService(ApplicationDbContext context) : ICustomerListService
+public class AdminCustomerListService(ApplicationDbContext context) : IAdminCustomerListService
 {
     public async Task<(IEnumerable<UserDto> Users, int TotalCount, int TotalPages)> GetAllAsync(bool includeDeleted,
         int page, int pageSize)

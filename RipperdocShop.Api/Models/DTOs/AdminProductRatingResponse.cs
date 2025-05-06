@@ -2,9 +2,9 @@ using RipperdocShop.Api.Models.Entities;
 
 namespace RipperdocShop.Api.Models.DTOs;
 
-public class CategoryAdminResponse
+public class AdminProductRatingResponse
 {
-    public IEnumerable<Category> Categories { get; init; } = null!;
+    public IEnumerable<ProductRating> Ratings { get; init; } = null!;
     public int TotalCount { get; init; }
     public int TotalPages { get; init; }
 }
