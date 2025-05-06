@@ -5,8 +5,8 @@ namespace RipperdocShop.Api.Services.Admin;
 
 public interface IAdminProductService
 {
-    Task<Product> CreateAsync(ProductCreateDto createDto, Category category, Brand? brand);
-    Task<Product?> UpdateAsync(Guid id, ProductCreateDto createDto, Category category, Brand? brand);
+    Task<Product?> CreateAsync(ProductCreateDto createDto);
+    Task<Product?> UpdateAsync(Guid id, ProductCreateDto createDto);
     Task<Product?> SetFeaturedAsync(Guid id);
     Task<Product?> RemoveFeaturedAsync(Guid id);
     Task<Product?> SoftDeleteAsync(Guid id);

@@ -14,7 +14,6 @@ namespace RipperdocShop.Api.Controllers.Admin;
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
 public class ProductsController(
-    ApplicationDbContext context,
     IAdminProductService productService,
     IProductCoreService productCoreService) : ControllerBase
 {
@@ -49,43 +48,35 @@ public class ProductsController(
     [HttpPost]
     public async Task<IActionResult> Create(ProductCreateDto createDto)
     {
-        var category = await context.Categories.FindAsync(createDto.CategoryId);
-        if (category == null) return BadRequest("Category not found");
-
-        Brand? brand = null;
-        if (createDto.BrandId != null)
+        try
         {
-            brand = await context.Brands.FindAsync(createDto.BrandId);
-            if (brand == null) return BadRequest("Brand not found");
+            var product = await productService.CreateAsync(createDto);
+            return CreatedAtAction(nameof(GetById), new { id = product?.Id }, product);
         }
-
-        var product = await productService.CreateAsync(createDto, category, brand);
-
-        return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+        catch (Exception e)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Could not create product",
+                Detail = e.Message
+            });
+        }
     }
 
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, ProductCreateDto createDto)
     {
-        var category = await context.Categories.FindAsync(createDto.CategoryId);
-        if (category == null) return BadRequest("Category not found");
-
-        Brand? brand = null;
-        if (createDto.BrandId != null)
-        {
-            brand = await context.Brands.FindAsync(createDto.BrandId);
-            if (brand == null) return BadRequest("Brand not found");
-        }
-
         try
         {
-            var product = await productService.UpdateAsync(id, createDto, category, brand);
+            var product = await productService.UpdateAsync(id, createDto);
             if (product == null)
                 return NotFound(new ProblemDetails
                 {
                     Status = StatusCodes.Status404NotFound,
-                    Title = "Resource not found",
-                    Detail = $"Product with ID {id} does not exist"
+                    Title = "Could not update product",
+                    Detail =
+                        $"Product with ID {id}, or Category with ID {createDto.CategoryId}, or Brand with ID {createDto.BrandId} does not exist"
                 });
 
             return NoContent();
