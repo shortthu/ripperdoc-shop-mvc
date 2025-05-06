@@ -67,6 +67,8 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<ICustomerProductService, CustomerProductService>();
 builder.Services.AddScoped<ICustomerCategoryService, CustomerCategoryService>();
 builder.Services.AddScoped<ICustomerBrandService, CustomerBrandService>();
+builder.Services.AddScoped<ICustomerProductRatingService, CustomerProductRatingService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddControllers();
 
