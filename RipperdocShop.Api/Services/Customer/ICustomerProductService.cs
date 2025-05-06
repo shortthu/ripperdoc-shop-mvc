@@ -9,4 +9,10 @@ public interface ICustomerProductService
 
     Task<ProductDto?> GetBySlugAsync(string slug);
     Task<IEnumerable<ProductDto>> GetFeaturedProductsAsync();
+
+    Task<(IEnumerable<ProductDto> Products, int TotalCount, int TotalPages)>
+        GetByCategorySlugAsync(string slug, bool includeDeleted, int page, int pageSize);
+
+    Task<(IEnumerable<ProductDto> Products, int TotalCount, int TotalPages)>
+        GetByBrandSlugAsync(string slug, bool includeDeleted, int page, int pageSize);
 }

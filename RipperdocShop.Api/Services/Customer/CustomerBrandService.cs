@@ -13,4 +13,11 @@ public class CustomerBrandService(IBrandCoreService brandCoreService, IMapper ma
         var brandsDto = mapper.Map<IEnumerable<BrandDto>>(brands);
         return (brandsDto, totalCount, totalPages);
     }
+    
+    public async Task<BrandDto?> GetBySlugAsync(string slug)
+    {
+        var brand = await brandCoreService.GetBySlugWithDetailsAsync(slug);
+        var brandDto = mapper.Map<BrandDto>(brand);
+        return brandDto;
+    }
 }

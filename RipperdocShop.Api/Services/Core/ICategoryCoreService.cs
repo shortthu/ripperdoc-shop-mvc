@@ -8,4 +8,6 @@ public interface ICategoryCoreService
 
     Task<(IEnumerable<Category> Categories, int TotalCount, int TotalPages)> GetAllAsync(
         bool includeDeleted, int page, int pageSize);
+
+    Task<Category?> GetBySlugWithDetailsAsync(string slug);
 }

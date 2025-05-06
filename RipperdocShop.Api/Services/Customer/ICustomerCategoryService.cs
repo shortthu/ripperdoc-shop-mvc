@@ -6,4 +6,6 @@ public interface ICustomerCategoryService
 {
     Task<(IEnumerable<CategoryDto> Categories, int TotalCount, int TotalPages)> GetAllAsync(
         bool includeDeleted, int page, int pageSize);
+
+    Task<CategoryDto?> GetBySlugAsync(string slug);
 }

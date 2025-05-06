@@ -23,4 +23,18 @@ public class CategoriesController(ICustomerCategoryService categoryService, ICat
         };
         return Ok(response);
     }
+    
+    [HttpGet("slug")]
+    public async Task<IActionResult> GetBySlug(string slug)
+    {
+        var category = await categoryService.GetBySlugAsync(slug);
+        return category == null
+            ? NotFound(new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Category not found",
+                Detail = $"Category with slug {slug} does not exist"
+            })
+            : Ok(category);
+    }
 }

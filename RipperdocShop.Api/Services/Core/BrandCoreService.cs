@@ -28,4 +28,10 @@ public class BrandCoreService(ApplicationDbContext context) : IBrandCoreService
             
         return (brands, totalCount, totalPages);
     }
+    
+    public async Task<Brand?> GetBySlugWithDetailsAsync(string slug)
+    {
+        return await context.Brands
+            .FirstOrDefaultAsync(p => p.Slug == slug);
+    }
 }

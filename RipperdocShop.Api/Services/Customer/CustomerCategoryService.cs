@@ -13,4 +13,11 @@ public class CustomerCategoryService(ICategoryCoreService categoryCoreService, I
         var categoriesDto = mapper.Map<IEnumerable<CategoryDto>>(categories);
         return (categoriesDto, totalCount, totalPages);
     }
+    
+    public async Task<CategoryDto?> GetBySlugAsync(string slug)
+    {
+        var category = await categoryCoreService.GetBySlugWithDetailsAsync(slug);
+        var categoryDto = mapper.Map<CategoryDto>(category);
+        return categoryDto;
+    }
 }

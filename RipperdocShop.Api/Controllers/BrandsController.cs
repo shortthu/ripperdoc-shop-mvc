@@ -22,4 +22,18 @@ public class BrandsController(ICustomerBrandService brandService, IBrandCoreServ
         };
         return Ok(response);
     }
+    
+    [HttpGet("slug")]
+    public async Task<IActionResult> GetBySlug(string slug)
+    {
+        var brand = await brandService.GetBySlugAsync(slug);
+        return brand == null
+            ? NotFound(new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Brand not found",
+                Detail = $"Brand with slug {slug} does not exist"
+            })
+            : Ok(brand);
+    }
 }

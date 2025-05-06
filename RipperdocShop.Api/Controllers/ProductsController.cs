@@ -9,7 +9,8 @@ namespace RipperdocShop.Api.Controllers;
 
 [Route("api/products")]
 [ApiController]
-public class ProductsController(ICustomerProductService productService,
+public class ProductsController(
+    ICustomerProductService productService,
     IProductCoreService productCoreService) : ControllerBase
 {
     [HttpGet]
@@ -25,7 +26,7 @@ public class ProductsController(ICustomerProductService productService,
         };
         return Ok(response);
     }
-    
+
     [HttpGet("slug")]
     public async Task<IActionResult> GetBySlug(string slug)
     {
@@ -39,7 +40,37 @@ public class ProductsController(ICustomerProductService productService,
             })
             : Ok(product);
     }
+
+    [HttpGet("category/slug")]
+    public async Task<IActionResult> GetByCategorySlug(string slug, [FromQuery] bool includeDeleted = false,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        var (products, totalCount, totalPages) =
+            await productService.GetByCategorySlugAsync(slug, includeDeleted, page, pageSize);
+        var response = new ProductResponse()
+        {
+            Products = products,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
+        return Ok(response);
+    }
     
+    [HttpGet("brand/slug")]
+    public async Task<IActionResult> GetByBrandSlug(string slug, [FromQuery] bool includeDeleted = false,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        var (products, totalCount, totalPages) =
+            await productService.GetByBrandSlugAsync(slug, includeDeleted, page, pageSize);
+        var response = new ProductResponse()
+        {
+            Products = products,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
+        return Ok(response);
+    }
+
     [HttpGet("featured")]
     public async Task<IActionResult> GetFeatured()
     {

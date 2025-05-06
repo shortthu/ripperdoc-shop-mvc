@@ -28,4 +28,10 @@ public class CategoryCoreService(ApplicationDbContext context) : ICategoryCoreSe
 
         return (categories, totalCount, totalPages);
     }
+    
+    public async Task<Category?> GetBySlugWithDetailsAsync(string slug)
+    {
+        return await context.Categories
+            .FirstOrDefaultAsync(p => p.Slug == slug);
+    }
 }
