@@ -50,6 +50,14 @@ public class ProductRatingController(
             : Ok(rating);
     }
     
+    [HttpGet("by-product/slug")]
+    public async Task<IActionResult> GetByProductSlug([FromQuery] string slug, [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var response = await productRatingService.GetByProductSlugAsync(slug, false, page, pageSize);
+        return Ok(response);
+    }
+    
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
