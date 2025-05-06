@@ -8,7 +8,7 @@ public class UserDto
     public bool EmailConfirmed { get; set; }
     public bool LockoutEnabled { get; set; }
 
-    public DateTime CreatedAt { get; init; }
+    public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
     public bool IsDisabled { get; set; }

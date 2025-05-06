@@ -1,4 +1,13 @@
+using System.Net.Http.Headers;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient("CustomerApi", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["CustomerApi:URL"] ?? string.Empty);
+    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+});
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
