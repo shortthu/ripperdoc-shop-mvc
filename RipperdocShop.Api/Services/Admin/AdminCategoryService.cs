@@ -11,15 +11,15 @@ public class AdminCategoryService(
     ICategoryCoreService categoryCoreService)
     : IAdminCategoryService
 {
-    public async Task<Category> CreateAsync(CategoryDto dto)
+    public async Task<Category> CreateAsync(CategoryCreateDto createDto)
     {
-        var category = new Category(dto.Name, dto.Description);
+        var category = new Category(createDto.Name, createDto.Description);
         context.Categories.Add(category);
         await context.SaveChangesAsync();
         return category;
     }
 
-    public async Task<Category?> UpdateAsync(Guid id, CategoryDto dto)
+    public async Task<Category?> UpdateAsync(Guid id, CategoryCreateDto createDto)
     {
         var category = await categoryCoreService.GetByIdAsync(id);
         if (category == null)
@@ -28,7 +28,7 @@ public class AdminCategoryService(
         if (category.DeletedAt != null)
             throw new InvalidOperationException("Cannot update a deleted category. Restore it first, choom.");
 
-        category.UpdateDetails(dto.Name, dto.Description);
+        category.UpdateDetails(createDto.Name, createDto.Description);
         await context.SaveChangesAsync();
         return category;
     }

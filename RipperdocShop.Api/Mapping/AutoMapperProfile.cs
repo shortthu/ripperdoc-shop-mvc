@@ -8,10 +8,10 @@ public class AutoMapperProfile : Profile
 {
     public AutoMapperProfile()
     {
-        CreateMap<Product, ProductResponseDto>();
-        CreateMap<Category, CategoryResponseDto>();
+        CreateMap<Product, ProductDto>();
         CreateMap<Category, CategoryDto>();
+        CreateMap<Category, CategoryCreateDto>();
+        CreateMap<Brand, BrandCreateDto>();
         CreateMap<Brand, BrandDto>();
-        CreateMap<Brand, BrandResponseDto>();
     }
 }

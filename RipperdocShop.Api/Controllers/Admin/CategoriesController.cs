@@ -35,11 +35,11 @@ public class CategoriesController(
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create(CategoryDto dto)
+    public async Task<IActionResult> Create(CategoryCreateDto createDto)
     {
         try
         {
-            var category = await categoryService.CreateAsync(dto);
+            var category = await categoryService.CreateAsync(createDto);
             return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
         }
         catch (Exception e)
@@ -75,11 +75,11 @@ public class CategoriesController(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update(Guid id, CategoryDto dto)
+    public async Task<IActionResult> Update(Guid id, CategoryCreateDto createDto)
     {
         try
         {
-            var category = await categoryService.UpdateAsync(id, dto);
+            var category = await categoryService.UpdateAsync(id, createDto);
 
             if (category == null)
                 return NotFound(new ProblemDetails

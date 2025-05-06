@@ -32,11 +32,11 @@ public class BrandsController(
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create(BrandDto dto)
+    public async Task<IActionResult> Create(BrandCreateDto createDto)
     {
         try
         {
-            var brand = await brandService.CreateAsync(dto);
+            var brand = await brandService.CreateAsync(createDto);
             return CreatedAtAction(nameof(GetById), new { id = brand.Id }, brand);
         }
         catch (Exception e)
@@ -68,11 +68,11 @@ public class BrandsController(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update(Guid id, BrandDto dto)
+    public async Task<IActionResult> Update(Guid id, BrandCreateDto createDto)
     {
         try
         {
-            var brand = await brandService.UpdateAsync(id, dto);
+            var brand = await brandService.UpdateAsync(id, createDto);
             if (brand == null)
                 return NotFound(new ProblemDetails
                 {

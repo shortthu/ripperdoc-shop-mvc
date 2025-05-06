@@ -1,28 +1,13 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace RipperdocShop.Shared.DTOs;
 
 public class ProductDto
 {
-    [Required]
-    [StringLength(100)]
-    public string Name { get; set; } = string.Empty;
-    
-    [Required]
-    [StringLength(500)]
-    public string Description { get; set; } = string.Empty;
-    
-    [Required]
-    [Url]
-    public string ImageUrl { get; set; } = string.Empty;
-    
-    [Range(0.0, double.MaxValue)]
-    public decimal Price { get; set; }
-
-    public bool IsFeatured { get; set; } = false;
-
-    [Required]
-    public Guid CategoryId { get; set; }
-    
-    public Guid? BrandId { get; set; }
+    public string Name { get; init; } = string.Empty;
+    public string Slug { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
+    public string ImageUrl { get; init; } = string.Empty;
+    public decimal Price { get; init; }
+    public bool IsFeatured { get; init; } = false;
+    public CategoryDto Category { get; init; } = null!;
+    public BrandCreateDto? Brand { get; init; }
 }

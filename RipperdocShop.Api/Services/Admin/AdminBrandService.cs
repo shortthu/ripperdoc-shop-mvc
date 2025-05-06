@@ -11,15 +11,15 @@ public class AdminBrandService(
     IBrandCoreService brandCoreService)
     : IAdminBrandService
 {
-    public async Task<Brand> CreateAsync(BrandDto dto)
+    public async Task<Brand> CreateAsync(BrandCreateDto createDto)
     {
-        var brand = new Brand(dto.Name, dto.Description);
+        var brand = new Brand(createDto.Name, createDto.Description);
         context.Brands.Add(brand);
         await context.SaveChangesAsync();
         return brand;
     }
 
-    public async Task<Brand?> UpdateAsync(Guid id, BrandDto dto)
+    public async Task<Brand?> UpdateAsync(Guid id, BrandCreateDto createDto)
     {
         var brand = await brandCoreService.GetByIdAsync(id);
         if (brand == null)
@@ -28,7 +28,7 @@ public class AdminBrandService(
         if (brand.DeletedAt != null)
             throw new InvalidOperationException("Cannot update a deleted brand. Restore it first, choom.");
 
-        brand.UpdateDetails(dto.Name, dto.Description);
+        brand.UpdateDetails(createDto.Name, createDto.Description);
         await context.SaveChangesAsync();
         return brand;
     }

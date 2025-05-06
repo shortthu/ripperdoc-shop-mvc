@@ -5,8 +5,8 @@ namespace RipperdocShop.Api.Services.Admin;
 
 public interface IAdminBrandService
 {
-    Task<Brand> CreateAsync(BrandDto dto);
-    Task<Brand?> UpdateAsync(Guid id, BrandDto dto);
+    Task<Brand> CreateAsync(BrandCreateDto createDto);
+    Task<Brand?> UpdateAsync(Guid id, BrandCreateDto createDto);
     Task<Brand?> SoftDeleteAsync(Guid id);
     Task<Brand?> RestoreAsync(Guid id);
     Task<Brand?> DeletePermanentlyAsync(Guid id);

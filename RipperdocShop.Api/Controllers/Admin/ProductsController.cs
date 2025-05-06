@@ -47,39 +47,39 @@ public class ProductsController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(ProductDto dto)
+    public async Task<IActionResult> Create(ProductCreateDto createDto)
     {
-        var category = await context.Categories.FindAsync(dto.CategoryId);
+        var category = await context.Categories.FindAsync(createDto.CategoryId);
         if (category == null) return BadRequest("Category not found");
 
         Brand? brand = null;
-        if (dto.BrandId != null)
+        if (createDto.BrandId != null)
         {
-            brand = await context.Brands.FindAsync(dto.BrandId);
+            brand = await context.Brands.FindAsync(createDto.BrandId);
             if (brand == null) return BadRequest("Brand not found");
         }
 
-        var product = await productService.CreateAsync(dto, category, brand);
+        var product = await productService.CreateAsync(createDto, category, brand);
 
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, ProductDto dto)
+    public async Task<IActionResult> Update(Guid id, ProductCreateDto createDto)
     {
-        var category = await context.Categories.FindAsync(dto.CategoryId);
+        var category = await context.Categories.FindAsync(createDto.CategoryId);
         if (category == null) return BadRequest("Category not found");
 
         Brand? brand = null;
-        if (dto.BrandId != null)
+        if (createDto.BrandId != null)
         {
-            brand = await context.Brands.FindAsync(dto.BrandId);
+            brand = await context.Brands.FindAsync(createDto.BrandId);
             if (brand == null) return BadRequest("Brand not found");
         }
 
         try
         {
-            var product = await productService.UpdateAsync(id, dto, category, brand);
+            var product = await productService.UpdateAsync(id, createDto, category, brand);
             if (product == null)
                 return NotFound(new ProblemDetails
                 {

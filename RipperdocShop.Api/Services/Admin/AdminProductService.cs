@@ -12,15 +12,15 @@ public class AdminProductService(
     IProductCoreService productCoreService)
     : IAdminProductService
 {
-    public async Task<Product> CreateAsync(ProductDto dto, Category category, Brand? brand)
+    public async Task<Product> CreateAsync(ProductCreateDto createDto, Category category, Brand? brand)
     {
         var product = new Product(
-            dto.Name,
-            dto.Description,
-            dto.ImageUrl,
-            dto.Price,
+            createDto.Name,
+            createDto.Description,
+            createDto.ImageUrl,
+            createDto.Price,
             category,
-            dto.IsFeatured,
+            createDto.IsFeatured,
             brand
         );
 
@@ -29,7 +29,7 @@ public class AdminProductService(
         return product;
     }
 
-    public async Task<Product?> UpdateAsync(Guid id, ProductDto dto, Category category, Brand? brand)
+    public async Task<Product?> UpdateAsync(Guid id, ProductCreateDto createDto, Category category, Brand? brand)
     {
         var product = await productCoreService.GetByIdAsync(id);
         if (product == null)
@@ -39,10 +39,10 @@ public class AdminProductService(
             throw new InvalidOperationException("Cannot update a deleted product. Restore it first, choom.");
 
         product.UpdateDetails(
-            dto.Name,
-            dto.Description,
-            dto.ImageUrl,
-            dto.Price,
+            createDto.Name,
+            createDto.Description,
+            createDto.ImageUrl,
+            createDto.Price,
             category,
             brand
         );
