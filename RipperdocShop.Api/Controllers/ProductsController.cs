@@ -18,7 +18,7 @@ public class ProductsController(
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var (products, totalCount, totalPages) = await productService.GetAllAsync(includeDeleted, page, pageSize);
-        var response = new ProductResponse()
+        var response = new ProductResponseDto()
         {
             Products = products,
             TotalCount = totalCount,
@@ -47,7 +47,7 @@ public class ProductsController(
     {
         var (products, totalCount, totalPages) =
             await productService.GetByCategorySlugAsync(slug, includeDeleted, page, pageSize);
-        var response = new ProductResponse()
+        var response = new ProductResponseDto()
         {
             Products = products,
             TotalCount = totalCount,
@@ -62,7 +62,7 @@ public class ProductsController(
     {
         var (products, totalCount, totalPages) =
             await productService.GetByBrandSlugAsync(slug, includeDeleted, page, pageSize);
-        var response = new ProductResponse()
+        var response = new ProductResponseDto()
         {
             Products = products,
             TotalCount = totalCount,

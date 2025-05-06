@@ -14,7 +14,7 @@ public class BrandsController(ICustomerBrandService brandService, IBrandCoreServ
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var (brands, totalCount, totalPages) = await brandService.GetAllAsync(includeDeleted, page, pageSize);
-        var response = new BrandResponse()
+        var response = new BrandResponseDto()
         {
             Brands = brands,
             TotalCount = totalCount,

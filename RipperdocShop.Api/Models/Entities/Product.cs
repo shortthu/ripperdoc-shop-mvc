@@ -21,6 +21,7 @@ public class Product : ITimestampedEntity, ISoftDeletable
     
     [Required]
     [Url]
+    [StringLength(2048)]
     public string ImageUrl { get; private set; } = string.Empty;
     
     [Range(0.0, double.MaxValue)]

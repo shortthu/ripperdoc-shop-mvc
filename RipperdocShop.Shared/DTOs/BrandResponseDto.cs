@@ -1,6 +1,6 @@
 namespace RipperdocShop.Shared.DTOs;
 
-public class BrandResponse
+public class BrandResponseDto
 {
     public IEnumerable<BrandDto> Brands { get; set; } = null!;
     public int TotalCount { get; set; }

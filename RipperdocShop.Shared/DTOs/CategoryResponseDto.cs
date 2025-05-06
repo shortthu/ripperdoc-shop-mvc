@@ -1,8 +1,8 @@
 namespace RipperdocShop.Shared.DTOs;
 
-public class ProductResponse
+public class CategoryResponseDto
 {
-    public IEnumerable<ProductDto> Products { get; set; } = null!;
+    public IEnumerable<CategoryDto> Categories { get; set; } = null!;
     public int TotalCount { get; set; }
     public int TotalPages { get; set; }
 }

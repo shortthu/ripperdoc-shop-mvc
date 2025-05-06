@@ -15,7 +15,7 @@ public class CategoriesController(ICustomerCategoryService categoryService, ICat
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var (categories, totalCount, totalPages) = await categoryService.GetAllAsync(includeDeleted, page, pageSize);
-        var response = new CategoryResponse()
+        var response = new CategoryResponseDto()
         {
             Categories = categories,
             TotalCount = totalCount,

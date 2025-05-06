@@ -38,6 +38,9 @@ builder.Services.AddIdentity<AppUser, AppRole>(options => options.SignIn.Require
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
+// Logger
+builder.Services.AddHttpLogging(options => { });
+
 // Cookie configurations
 if (builder.Environment.IsDevelopment())
 {
@@ -141,6 +144,8 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseStaticFiles();
+
+app.UseHttpLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
