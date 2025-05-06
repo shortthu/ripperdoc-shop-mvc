@@ -6,12 +6,17 @@ namespace RipperdocShop.Api.Services.Customer;
 
 public class CustomerCategoryService(ICategoryCoreService categoryCoreService, IMapper mapper) : ICustomerCategoryService
 {
-    public async Task<(IEnumerable<CategoryDto> Categories, int TotalCount, int TotalPages)> GetAllAsync(
+    public async Task<CategoryResponseDto> GetAllAsync(
         bool includeDeleted, int page, int pageSize)
     {
         var (categories, totalCount, totalPages) = await categoryCoreService.GetAllAsync(includeDeleted, page, pageSize);
         var categoriesDto = mapper.Map<IEnumerable<CategoryDto>>(categories);
-        return (categoriesDto, totalCount, totalPages);
+        return new CategoryResponseDto()
+        {
+            Categories = categoriesDto,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
     }
     
     public async Task<CategoryDto?> GetBySlugAsync(string slug)

@@ -6,14 +6,19 @@ namespace RipperdocShop.Api.Services.Customer;
 
 public class CustomerBrandService(IBrandCoreService brandCoreService, IMapper mapper) : ICustomerBrandService
 {
-    public async Task<(IEnumerable<BrandDto> Categories, int TotalCount, int TotalPages)> GetAllAsync(
+    public async Task<BrandResponseDto> GetAllAsync(
         bool includeDeleted, int page, int pageSize)
     {
         var (brands, totalCount, totalPages) = await brandCoreService.GetAllAsync(includeDeleted, page, pageSize);
         var brandsDto = mapper.Map<IEnumerable<BrandDto>>(brands);
-        return (brandsDto, totalCount, totalPages);
+        return new BrandResponseDto
+        {
+            Brands = brandsDto,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
     }
-    
+
     public async Task<BrandDto?> GetBySlugAsync(string slug)
     {
         var brand = await brandCoreService.GetBySlugWithDetailsAsync(slug);

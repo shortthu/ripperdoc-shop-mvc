@@ -14,13 +14,7 @@ public class CategoriesController(ICustomerCategoryService categoryService, ICat
     public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (categories, totalCount, totalPages) = await categoryService.GetAllAsync(includeDeleted, page, pageSize);
-        var response = new CategoryResponseDto()
-        {
-            Categories = categories,
-            TotalCount = totalCount,
-            TotalPages = totalPages
-        };
+        var response = await categoryService.GetAllAsync(includeDeleted, page, pageSize);
         return Ok(response);
     }
     
