@@ -398,7 +398,8 @@ namespace RipperdocShop.Api.Migrations
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
                         .HasColumnName("image_url");
 
                     b.Property<bool>("IsFeatured")
@@ -480,13 +481,17 @@ namespace RipperdocShop.Api.Migrations
                     b.HasKey("Id")
                         .HasName("pk_product_ratings");
 
-                    b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_product_ratings_product_id");
-
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_product_ratings_user_id");
 
-                    b.ToTable("product_ratings", (string)null);
+                    b.HasIndex("ProductId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_product_ratings_product_id_user_id");
+
+                    b.ToTable("product_ratings", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ProductRatings_Score_Range", "[score] >= 1 AND [score] <= 5");
+                        });
                 });
 
             modelBuilder.Entity("RipperdocShop.Api.Models.Identities.AppRole", b =>

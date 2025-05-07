@@ -28,8 +28,11 @@ public class ProductRating : ITimestampedEntity, ISoftDeletable
 
     public ProductRating(int score, string? comment, Product product, AppUser user)
     {
+        if (score is < 1 or > 5)
+            throw new ArgumentOutOfRangeException(nameof(score), "Rating must be between 1 and 5.");
+
         Id = Guid.NewGuid();
-        Score = score;
+        Score = Math.Clamp(score, 1, 5);
         Comment = comment;
         ProductId = product.Id;
         Product = product;
@@ -49,6 +52,9 @@ public class ProductRating : ITimestampedEntity, ISoftDeletable
             if (string.IsNullOrWhiteSpace(comment)) 
                 throw new ArgumentException("Comments can't be blank or whitespace.");
         }
+        
+        if (score is < 1 or > 5)
+            throw new ArgumentOutOfRangeException(nameof(score), "Rating must be between 1 and 5.");
         
         Score = Math.Clamp(score, 1, 5);
         Comment = comment?.Trim();

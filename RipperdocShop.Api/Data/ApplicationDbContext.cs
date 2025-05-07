@@ -96,6 +96,14 @@ public class ApplicationDbContext(
             e.HasKey(r => r.Id);
             e.Property(r => r.Score).IsRequired();
             e.Property(r => r.Comment).HasMaxLength(3000);
+            
+            e.HasCheckConstraint(
+                "CK_ProductRatings_Score_Range",
+                "[score] >= 1 AND [score] <= 5"
+            );
+
+            e.HasIndex(r => new { r.ProductId, r.UserId })
+                .IsUnique();
 
             e.HasOne(r => r.Product)
                 .WithMany()
