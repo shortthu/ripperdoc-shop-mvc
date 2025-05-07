@@ -7,8 +7,8 @@ public class CategoryService(IHttpClientFactory factory) : BaseApiService(factor
     public Task<CategoryDto?> GetBySlugAsync(string slug) =>
         GetAsync<CategoryDto>($"/api/categories/{slug}");
 
-    public Task<CategoryResponseDto?> GetAllAsync(int page = 1, int pageSize = 10) =>
-        GetAsync<CategoryResponseDto>($"/api/categories",
+    public Task<PaginatedCategoryResponse?> GetAllAsync(int page = 1, int pageSize = 10) =>
+        GetAsync<PaginatedCategoryResponse>($"/api/categories",
             new Dictionary<string, string>
             {
                 { "page", page.ToString() },

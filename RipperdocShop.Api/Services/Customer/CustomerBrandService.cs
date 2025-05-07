@@ -6,12 +6,12 @@ namespace RipperdocShop.Api.Services.Customer;
 
 public class CustomerBrandService(IBrandCoreService brandCoreService, IMapper mapper) : ICustomerBrandService
 {
-    public async Task<BrandResponseDto> GetAllAsync(
+    public async Task<PaginatedBrandResponse> GetAllAsync(
         bool includeDeleted, int page, int pageSize)
     {
         var (brands, totalCount, totalPages) = await brandCoreService.GetAllAsync(includeDeleted, page, pageSize);
         var brandsDto = mapper.Map<IEnumerable<BrandDto>>(brands);
-        return new BrandResponseDto
+        return new PaginatedBrandResponse
         {
             Brands = brandsDto,
             TotalCount = totalCount,

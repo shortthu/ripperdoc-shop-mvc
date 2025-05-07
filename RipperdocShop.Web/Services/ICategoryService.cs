@@ -6,5 +6,5 @@ public interface ICategoryService
 {
     Task<CategoryDto?> GetBySlugAsync(string slug);
 
-    Task<CategoryResponseDto?> GetAllAsync(int page = 1, int pageSize = 10);
+    Task<PaginatedCategoryResponse?> GetAllAsync(int page = 1, int pageSize = 10);
 }

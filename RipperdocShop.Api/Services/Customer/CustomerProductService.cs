@@ -6,12 +6,12 @@ namespace RipperdocShop.Api.Services.Customer;
 
 public class CustomerProductService(IProductCoreService productCoreService, IMapper mapper) : ICustomerProductService
 {
-    public async Task<ProductResponseDto> GetAllAsync(
+    public async Task<PaginatedProductResponse> GetAllAsync(
         bool includeDeleted, int page, int pageSize)
     {
         var (products, totalCount, totalPages) = await productCoreService.GetAllAsync(includeDeleted, page, pageSize);
         var productDto = mapper.Map<IEnumerable<ProductDto>>(products);
-        return new ProductResponseDto()
+        return new PaginatedProductResponse()
         {
             Products = productDto,
             TotalCount = totalCount,
@@ -19,13 +19,13 @@ public class CustomerProductService(IProductCoreService productCoreService, IMap
         };
     }
 
-    public async Task<ProductResponseDto>
+    public async Task<PaginatedProductResponse>
         GetByCategorySlugAsync(string slug, bool includeDeleted, int page, int pageSize)
     {
         var (products, totalCount, totalPages) =
             await productCoreService.GetByCategorySlugAsync(slug, includeDeleted, page, pageSize);
         var productDto = mapper.Map<IEnumerable<ProductDto>>(products);
-        return new ProductResponseDto()
+        return new PaginatedProductResponse()
         {
             Products = productDto,
             TotalCount = totalCount,
@@ -33,13 +33,13 @@ public class CustomerProductService(IProductCoreService productCoreService, IMap
         };
     }
 
-    public async Task<ProductResponseDto>
+    public async Task<PaginatedProductResponse>
         GetByBrandSlugAsync(string slug, bool includeDeleted, int page, int pageSize)
     {
         var (products, totalCount, totalPages) =
             await productCoreService.GetByBrandSlugAsync(slug, includeDeleted, page, pageSize);
         var productDto = mapper.Map<IEnumerable<ProductDto>>(products);
-        return new ProductResponseDto()
+        return new PaginatedProductResponse()
         {
             Products = productDto,
             TotalCount = totalCount,

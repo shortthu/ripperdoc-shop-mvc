@@ -1,8 +1,8 @@
 namespace RipperdocShop.Shared.DTOs;
 
-public class ProductRatingResponseDto
+public class PaginatedCategoryResponse
 {
-    public IEnumerable<ProductRatingDto> Ratings { get; set; } = null!;
+    public IEnumerable<CategoryDto> Categories { get; set; } = null!;
     public int TotalCount { get; set; }
     public int TotalPages { get; set; }
 }

@@ -45,13 +45,13 @@ public class CustomerProductRatingService(
         return ratingDto;
     }
 
-    public async Task<ProductRatingResponseDto> GetByProductSlugAsync(string slug, bool includeDeleted, int page,
+    public async Task<PaginatedProductRatingResponse> GetByProductSlugAsync(string slug, bool includeDeleted, int page,
         int pageSize)
     {
         var (ratings, totalCount, totalPages) = await
             ratingCoreService.GetByProductSlugAsync(slug, includeDeleted, page, pageSize);
         var ratingsDto = mapper.Map<IEnumerable<ProductRatingDto>>(ratings);
-        return new ProductRatingResponseDto()
+        return new PaginatedProductRatingResponse()
         {
             Ratings = ratingsDto,
             TotalCount = totalCount,
