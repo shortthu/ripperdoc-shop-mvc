@@ -9,8 +9,6 @@ using RipperdocShop.Api.Services;
 
 namespace RipperdocShop.Api.Controllers;
 
-// This route is ONLY for the Admin user
-
 [ApiController]
 [Route("api/auth")]
 public class AuthController(
@@ -20,7 +18,7 @@ public class AuthController(
     IHostEnvironment env)
     : ControllerBase
 {
-    private CookieOptions GetAdminCookieOptions()
+    private CookieOptions GetCookieOptions()
     {
         return new CookieOptions
         {
@@ -49,7 +47,7 @@ public class AuthController(
         
         var token = jwt.GenerateToken(user, roles);
         
-        Response.Cookies.Append("AdminAccessToken", token, GetAdminCookieOptions());
+        Response.Cookies.Append("AccessToken", token, GetCookieOptions());
         
         // Return the token straight to the response on dev env to make it easier to test with Swagger
         return env.IsDevelopment() 
@@ -57,11 +55,35 @@ public class AuthController(
             : Ok(new { message = "Access granted" });
     }
     
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] LoginDto dto)
+    {
+        var user = new AppUser { UserName = dto.Email, Email = dto.Email };
+
+        var result = await userManager.CreateAsync(user, dto.Password);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
+        }
+        
+        await userManager.AddToRoleAsync(user, "Customer");
+
+        var token = jwt.GenerateToken(user, ["Customer"]);
+        
+        Response.Cookies.Append("AccessToken", token, GetCookieOptions());
+        
+        // Return the token straight to the response on dev env to make it easier to test with Swagger
+        return env.IsDevelopment() 
+            ? Ok(new { message = "Customer account created", token }) 
+            : Ok(new { message = "Customer account created" });
+    }
+    
     [HttpPost("logout")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public IActionResult Logout()
     {
-        Response.Cookies.Delete("AdminAccessToken", GetAdminCookieOptions());
+        Response.Cookies.Delete("AccessToken", GetCookieOptions());
         return Ok(new { message = "Wiped clean" });
     }
     
@@ -71,9 +93,11 @@ public class AuthController(
     {
         var username = User.FindFirstValue(ClaimTypes.Name) ?? "Unknown";
         var roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "Unknown";
 
         return Ok(new
         {
+            id,
             username,
             roles
         });

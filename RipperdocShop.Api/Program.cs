@@ -95,7 +95,7 @@ builder.Services.AddAuthentication()
          {
              OnMessageReceived = context =>
              {
-                 if (context.Request.Cookies.TryGetValue("AdminAccessToken", out var token))
+                 if (context.Request.Cookies.TryGetValue("AccessToken", out var token))
                      context.Token = token;
                  return Task.CompletedTask;
              }
