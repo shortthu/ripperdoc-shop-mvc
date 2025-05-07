@@ -14,5 +14,6 @@ public class AutoMapperProfile : Profile
         CreateMap<Brand, BrandCreateDto>();
         CreateMap<Brand, BrandDto>();
         CreateMap<ProductRating, ProductRatingDto>();
+        CreateMap<ProductRating, ProductRatingCreateDto>();
     }
 }

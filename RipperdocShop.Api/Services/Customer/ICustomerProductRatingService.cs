@@ -5,10 +5,12 @@ namespace RipperdocShop.Api.Services.Customer;
 
 public interface ICustomerProductRatingService
 {
-    Task<ProductRating?> CreateAsync(ProductRatingDto createDto);
+    Task<ProductRatingDto?> CreateAsync(ProductRatingCreateDto createDto, Guid userId);
+
+    Task<ProductRatingDto?> GetByIdAsync(Guid id);
 
     Task<ProductRatingResponseDto> GetByProductSlugAsync(string slug, bool includeDeleted, int page,
         int pageSize);
 
-    Task<ProductRating?> UpdateAsync(Guid id, ProductRatingDto createDto);
+    Task<ProductRating?> UpdateAsync(Guid id, ProductRatingCreateDto createDto, Guid userId);
 }

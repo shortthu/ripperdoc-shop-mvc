@@ -1,8 +1,11 @@
+using System.Security.Claims;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using RipperdocShop.Api.Data;
 using RipperdocShop.Api.Models.Entities;
 using RipperdocShop.Api.Services.Core;
 using RipperdocShop.Shared.DTOs;
+
 
 namespace RipperdocShop.Api.Services.Customer;
 
@@ -14,18 +17,32 @@ public class CustomerProductRatingService(
     IMapper mapper)
     : ICustomerProductRatingService
 {
-    public async Task<ProductRating?> CreateAsync(ProductRatingDto createDto)
+    public async Task<ProductRatingDto?> CreateAsync(ProductRatingCreateDto createDto, Guid userId)
     {
         var product = await productCoreService.GetBySlugWithDetailsAsync(createDto.ProductSlug);
         if (product is not { DeletedAt: null }) return null;
 
-        var user = await userService.GetByIdAsync(createDto.CustomerId);
+        var user = await userService.GetByIdAsync(userId);
         if (user is not { DeletedAt: null }) return null;
 
+        if (await context.ProductRatings.AnyAsync(r =>
+                r.ProductId == product.Id && r.UserId == user.Id))
+            throw new InvalidOperationException("You have already reviewed this product.");
+        
         var rating = new ProductRating(createDto.Score, createDto.Comment, product, user);
         context.ProductRatings.Add(rating);
         await context.SaveChangesAsync();
-        return rating;
+
+        var ratingDto = mapper.Map<ProductRatingDto>(rating);
+
+        return ratingDto;
+    }
+    
+    public async Task<ProductRatingDto?> GetByIdAsync(Guid id)
+    {
+        var rating = await ratingCoreService.GetByIdWithDetailsAsync(id);
+        var ratingDto = mapper.Map<ProductRatingDto>(rating);
+        return ratingDto;
     }
 
     public async Task<ProductRatingResponseDto> GetByProductSlugAsync(string slug, bool includeDeleted, int page,
@@ -42,7 +59,7 @@ public class CustomerProductRatingService(
         };
     }
 
-    public async Task<ProductRating?> UpdateAsync(Guid id, ProductRatingDto createDto)
+    public async Task<ProductRating?> UpdateAsync(Guid id, ProductRatingCreateDto createDto, Guid userId)
     {
         var rating = await ratingCoreService.GetByIdAsync(id);
         if (rating == null)
@@ -54,7 +71,7 @@ public class CustomerProductRatingService(
         var product = await productCoreService.GetBySlugWithDetailsAsync(createDto.ProductSlug);
         if (product is not { DeletedAt: null }) return null;
 
-        var user = await userService.GetByIdAsync(createDto.CustomerId);
+        var user = await userService.GetByIdAsync(userId);
         if (user is not { DeletedAt: null }) return null;
 
         rating.UpdateDetails(createDto.Score, createDto.Comment, product, user);

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -5,24 +6,40 @@ using RipperdocShop.Api.Models.Entities;
 using RipperdocShop.Api.Services.Core;
 using RipperdocShop.Api.Services.Customer;
 using RipperdocShop.Shared.DTOs;
+// ReSharper disable ConvertToPrimaryConstructor
 
 namespace RipperdocShop.Api.Controllers.Customer;
 
 [Route("ratings")]
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
-public class ProductRatingController(
-    ICustomerProductRatingService productRatingService,
-    ProductRatingCoreService coreService) : ControllerBase
+public class ProductRatingsController : ControllerBase
 {
+    private readonly ICustomerProductRatingService _productRatingService;
+    private readonly IProductRatingCoreService _productRatingCoreService;
+
+    public ProductRatingsController(
+        ICustomerProductRatingService productRatingService,
+        IProductRatingCoreService productRatingCoreService
+    )
+    {
+        _productRatingService = productRatingService;
+        _productRatingCoreService = productRatingCoreService;
+    }
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create(ProductRatingDto createDto)
+    public async Task<IActionResult> Create(ProductRatingCreateDto createDto)
     {
         try
         {
-            var rating = await productRatingService.CreateAsync(createDto);
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdString, out var userId))
+                throw new Exception("Not logged in.");
+            
+            var rating = await _productRatingService.CreateAsync(createDto, userId);
+            
             return CreatedAtAction(nameof(GetById), new { id = rating?.Id }, rating);
         }
         catch (Exception e)
@@ -35,11 +52,11 @@ public class ProductRatingController(
             });
         }
     }
-    
+
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var rating = await coreService.GetByIdAsync(id);
+        var rating = await _productRatingService.GetByIdAsync(id);
         return rating == null
             ? NotFound(new ProblemDetails
             {
@@ -49,24 +66,28 @@ public class ProductRatingController(
             })
             : Ok(rating);
     }
-    
+
     [HttpGet("by-product/{slug}")]
     public async Task<IActionResult> GetByProductSlug(string slug, [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
-        var response = await productRatingService.GetByProductSlugAsync(slug, false, page, pageSize);
+        var response = await _productRatingService.GetByProductSlugAsync(slug, false, page, pageSize);
         return Ok(response);
     }
-    
+
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update(Guid id, ProductRatingDto createDto)
+    public async Task<IActionResult> Update(Guid id, ProductRatingCreateDto createDto)
     {
         try
         {
-            var rating = await productRatingService.UpdateAsync(id, createDto);
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdString, out var userId))
+                throw new Exception("Not logged in.");
+            
+            var rating = await _productRatingService.UpdateAsync(id, createDto, userId);
             if (rating == null)
                 return NotFound(new ProblemDetails
                 {
