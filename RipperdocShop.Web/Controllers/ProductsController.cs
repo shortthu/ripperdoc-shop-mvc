@@ -41,12 +41,18 @@ public class ProductsController(
         
         var category = await categoryService.GetBySlugAsync(slug);
     
-        var vm = new CategoryProductsViewModel
+        var byCategory = new CategoryProductsViewModel
         {
             Category = category,
             Products = products
         };
     
-        return View("Index", vm);
+        return View(byCategory);
+    }
+    
+    public async Task<IActionResult> Index()
+    {
+        var products = await productService.GetAllAsync();
+        return View(products);
     }
 }
