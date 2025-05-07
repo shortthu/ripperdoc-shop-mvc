@@ -10,10 +10,9 @@ namespace RipperdocShop.Api.Controllers;
 public class BrandsController(ICustomerBrandService brandService, IBrandCoreService brandCoreService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false,
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var response = await brandService.GetAllAsync(includeDeleted, page, pageSize);
+        var response = await brandService.GetAllAsync(false, page, pageSize);
         return Ok(response);
     }
     

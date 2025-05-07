@@ -11,10 +11,9 @@ public class CategoriesController(ICustomerCategoryService categoryService, ICat
     : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false,
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var response = await categoryService.GetAllAsync(includeDeleted, page, pageSize);
+        var response = await categoryService.GetAllAsync(false, page, pageSize);
         return Ok(response);
     }
     
