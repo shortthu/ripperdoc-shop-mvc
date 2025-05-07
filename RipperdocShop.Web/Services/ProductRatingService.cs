@@ -8,7 +8,6 @@ public class ProductRatingService(IHttpClientFactory factory) : BaseApiService(f
         int page = 1, int pageSize = 10) =>
         GetAsync<List<ProductRatingDto>?>($"/api/ratings/by-product/{slug}", new Dictionary<string, string>
         {
-            { "includeDeleted", includeDeleted.ToString() },
             { "page", page.ToString() },
             { "pageSize", pageSize.ToString() }
         });

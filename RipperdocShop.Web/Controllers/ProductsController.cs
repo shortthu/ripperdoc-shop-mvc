@@ -5,6 +5,7 @@ using RipperdocShop.Web.Services;
 
 namespace RipperdocShop.Web.Controllers;
 
+[Controller]
 public class ProductsController(
     IProductService productService,
     ICategoryService categoryService,
@@ -20,7 +21,7 @@ public class ProductsController(
             return NotFound();
         }
         
-        var result = new ProductDetailsViewModel()
+        var result = new ProductDetailsViewModel
         {
             Product = product,
             Ratings = ratingsResult?.ToList() ?? []

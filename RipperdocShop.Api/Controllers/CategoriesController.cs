@@ -17,7 +17,7 @@ public class CategoriesController(ICustomerCategoryService categoryService, ICat
         return Ok(response);
     }
     
-    [HttpGet("slug")]
+    [HttpGet("{slug}")]
     public async Task<IActionResult> GetBySlug(string slug)
     {
         var category = await categoryService.GetBySlugAsync(slug);

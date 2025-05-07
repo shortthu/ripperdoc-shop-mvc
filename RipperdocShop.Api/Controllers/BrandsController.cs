@@ -16,7 +16,7 @@ public class BrandsController(ICustomerBrandService brandService, IBrandCoreServ
         return Ok(response);
     }
     
-    [HttpGet("slug")]
+    [HttpGet("{slug}")]
     public async Task<IActionResult> GetBySlug(string slug)
     {
         var brand = await brandService.GetBySlugAsync(slug);

@@ -20,7 +20,7 @@ public class ProductsController(
         return Ok(response);
     }
 
-    [HttpGet("slug")]
+    [HttpGet("{slug}")]
     public async Task<IActionResult> GetBySlug(string slug)
     {
         var product = await productService.GetBySlugAsync(slug);
