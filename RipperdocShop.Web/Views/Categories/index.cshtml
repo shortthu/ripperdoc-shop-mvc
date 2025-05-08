@@ -1,10 +1,10 @@
 @model RipperdocShop.Web.Models.ViewModels.CategoryProductsViewModel
 
 <section class="max-w-screen-xl mx-auto py-8 px-4">
-  <h1 class="text-2xl font-bold mb-4">Products in @Model.Category.Name</h1>
+  <h1 class="text-2xl font-bold mb-4">Products in @Model.Category?.Name</h1>
 
   <div class="grid md:grid-cols-3 sm:grid-cols-2 gap-6">
-    @foreach (var product in Model.Products.Products)
+    @foreach (var product in Model.Products?.Products)
     {
       <div class="p-4 border rounded shadow bg-white">
         <img src="@product.ImageUrl" class="h-40 w-full object-cover mb-3 rounded" />
