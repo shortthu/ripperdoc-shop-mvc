@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using RipperdocShop.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,10 +10,22 @@ builder.Services.AddHttpClient("CustomerApi", client =>
     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 });
 
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddScoped<IProductService, ProductService>()
     .AddScoped<ICategoryService, CategoryService>()
     .AddScoped<IBrandService, BrandService>()
-    .AddScoped<IProductRatingService, ProductRatingService>();
+    .AddScoped<IProductRatingService, ProductRatingService>()
+    .AddScoped<IUserService, UserService>();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.LogoutPath = "/Auth/Logout";
+        // options.AccessDeniedPath = "/AccessDenied";
+        options.Cookie.HttpOnly = true;
+    });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -26,6 +39,9 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
