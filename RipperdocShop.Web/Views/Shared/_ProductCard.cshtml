@@ -2,7 +2,9 @@
 
 <div
   class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-  <img class="rounded-t-lg" src="@Model.ImageUrl" alt="@Model.Name"/>
+  <div class="w-full flex items-center justify-center">
+    <img class="rounded-t-lg" src="@Model.ImageUrl" alt="@Model.Name"/>
+  </div>
   <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">@Model.Name</h5>
   <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">€$@Model.Price</p>
   <div>

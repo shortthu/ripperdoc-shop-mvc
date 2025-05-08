@@ -11,6 +11,6 @@ public static class TestDbContextFactory
             .UseInMemoryDatabase(databaseName: dbName)
             .Options;
 
-        return new ApplicationDbContext(options, null);
+        return new ApplicationDbContext(options, null!);
     }
 }
