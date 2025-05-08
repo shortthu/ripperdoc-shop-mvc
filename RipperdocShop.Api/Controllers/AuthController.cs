@@ -95,11 +95,14 @@ public class AuthController(
         var roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
         var id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "Unknown";
 
-        return Ok(new
+        if (!Guid.TryParse(id, out var userId))
+            throw new Exception("Not logged in.");
+
+        return Ok(new WhoAmIDto
         {
-            id,
-            username,
-            roles
+            Id = userId,
+            Username = username,
+            Roles = roles
         });
     }
 }
