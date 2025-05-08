@@ -14,6 +14,9 @@ public class AutoMapperProfile : Profile
         CreateMap<Brand, BrandCreateDto>();
         CreateMap<Brand, BrandDto>();
         CreateMap<ProductRating, ProductRatingDto>();
-        CreateMap<ProductRating, ProductRatingCreateDto>();
+        CreateMap<ProductRating, ProductRatingCreateDto>()
+            .ForMember(
+                dest => dest.ProductSlug,
+                opt => opt.MapFrom(src => src.Product.Slug));
     }
 }

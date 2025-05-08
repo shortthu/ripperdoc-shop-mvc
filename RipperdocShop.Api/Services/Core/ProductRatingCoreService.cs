@@ -44,6 +44,7 @@ public class ProductRatingCoreService(ApplicationDbContext context) : IProductRa
     {
         var query = context.ProductRatings
             .Include(r => r.User)
+            .Include(r => r.Product)
             .Where(r => r.Product.Slug == slug)
             .Where(r => includeDeleted || r.DeletedAt == null);
 
