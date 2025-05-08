@@ -2,6 +2,7 @@ using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RipperdocShop.Shared.DTOs;
 using RipperdocShop.Web.Models.Auth;
@@ -12,8 +13,15 @@ namespace RipperdocShop.Web.Controllers;
 public class AuthController(IUserService userService, IMapper mapper) : Controller
 {
     [HttpGet]
-    public IActionResult Login() => View();
-    
+    [AllowAnonymous]
+    public IActionResult Login()
+    {
+        if (User.Identity?.IsAuthenticated == true)
+            return RedirectToAction("Index", "Home");
+
+        return View();
+    }
+
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel viewModel)
     {
@@ -51,7 +59,7 @@ public class AuthController(IUserService userService, IMapper mapper) : Controll
 
         return RedirectToAction("Index", "Home");
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Logout()
     {
@@ -61,7 +69,13 @@ public class AuthController(IUserService userService, IMapper mapper) : Controll
     }
 
     [HttpGet]
-    public IActionResult Register() => View();
+    [AllowAnonymous]
+    public IActionResult Register() {
+        if (User.Identity?.IsAuthenticated == true)
+            return RedirectToAction("Index", "Home");
+
+        return View();
+    }
 
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel viewModel)
