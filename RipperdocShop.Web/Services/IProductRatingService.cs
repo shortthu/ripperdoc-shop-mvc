@@ -4,6 +4,5 @@ namespace RipperdocShop.Web.Services;
 
 public interface IProductRatingService
 {
-    Task<List<ProductRatingDto>?> GetByProductSlug(string slug, bool includeDeleted = false,
-        int page = 1, int pageSize = 10);
+    Task<PaginatedProductRatingResponse?> GetByProductSlug(string slug, int page = 1, int pageSize = 10);
 }

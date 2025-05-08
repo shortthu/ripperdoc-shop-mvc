@@ -5,7 +5,6 @@ using RipperdocShop.Web.Services;
 
 namespace RipperdocShop.Web.Controllers;
 
-[Controller]
 public class ProductsController(
     IProductService productService,
     ICategoryService categoryService,
@@ -20,13 +19,12 @@ public class ProductsController(
         {
             return NotFound();
         }
-        
+
         var result = new ProductDetailsViewModel
         {
             Product = product,
-            Ratings = ratingsResult?.ToList() ?? []
+            Ratings = ratingsResult,
         };
-
 
         return View(result);
     }
@@ -38,18 +36,18 @@ public class ProductsController(
         {
             return NotFound();
         }
-        
+
         var category = await categoryService.GetBySlugAsync(slug);
-    
+
         var byCategory = new CategoryProductsViewModel
         {
             Category = category,
             Products = products
         };
-    
+
         return View(byCategory);
     }
-    
+
     public async Task<IActionResult> Index()
     {
         var products = await productService.GetAllAsync();

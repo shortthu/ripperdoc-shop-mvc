@@ -10,9 +10,8 @@ using RipperdocShop.Shared.DTOs;
 
 namespace RipperdocShop.Api.Controllers.Customer;
 
-[Route("ratings")]
+[Route("api/ratings")]
 [ApiController]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
 public class ProductRatingsController : ControllerBase
 {
     private readonly ICustomerProductRatingService _productRatingService;
@@ -30,6 +29,7 @@ public class ProductRatingsController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
     public async Task<IActionResult> Create(ProductRatingCreateDto createDto)
     {
         try
@@ -79,6 +79,7 @@ public class ProductRatingsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
     public async Task<IActionResult> Update(Guid id, ProductRatingCreateDto createDto)
     {
         try

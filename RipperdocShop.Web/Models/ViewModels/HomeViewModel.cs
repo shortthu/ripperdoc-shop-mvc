@@ -4,6 +4,6 @@ namespace RipperdocShop.Web.Models.ViewModels;
 
 public class HomeViewModel
 {
-    public PaginatedCategoryResponse? Categories { get; set; }
-    public List<ProductDto>? FeaturedProducts { get; set; } = [];
+    public PaginatedCategoryResponse? Categories { get; init; }
+    public List<ProductDto>? FeaturedProducts { get; init; } = [];
 }
